@@ -1,0 +1,25 @@
+(1) 務必先透過NuGet安裝這些套件
+-- 「Microsoft.EntityFrameworkCore.Tools」套件
+-- 「Microsoft.EntityFrameworkCore.SqlServer」套件（這兩個跟資料庫相關）
+
+--「Microsoft.Extensions.Configuration」套件（讀取設定檔。 .NET 8.0必須自己手動安裝）
+
+不然會出現下列錯誤 --
+
+Scaffold-DbContext : 無法辨識 'Scaffold-DbContext' 詞彙是否為 Cmdlet、函數、指令檔或可執行程式的名稱。請檢查名稱拼字是否正確，如果包含路徑的話，請確認路徑是否正確，然後再試一次。
+位於 線路:1 字元:1
++ Scaffold-DbContext 'Data Source=.\SqlExpress;Initial Catalog=MVC_User ...
++ ~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (Scaffold-DbContext:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+
+
+(2)   上方的功能列「工具」 =>「Nuget套件管理器」=>「套件管理器主控台」
+請輸入這段指令
+
+Scaffold-DbContext 'Server=127.0.0.1;Database=MVC_UserDB;User ID=mib;Password=mib;Trusted_Connection=True;TrustServerCertificate=true;MultipleActiveResultSets=true' Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+   
+    //-OutputDir Models 產生的DbContext放在哪個目錄下
+    // [錯誤訊息 與 解法] A connection was successfully established with the server, but then an error occurred during the login process. (provider: SSL Provider, error: 0 - 此憑證鏈結是由不受信任的授權單位發出的。)
+    // https://www.dotblogs.com.tw/mis2000lab/2021/11/29/SqlClient_SqlException_SSL_Provider_error
+
