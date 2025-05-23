@@ -18,7 +18,27 @@ namespace CRUD_Project.Controllers
             _logger = logger;
             _db = DbContext;
         }
- 
+
+        public async Task<IActionResult> List()
+        {
+            //https://hackmd.io/@AndyShih/SJOlljYI2
+            //在IDE中寫好的IQueryable只是"查詢狀態"，此時還沒執行資料庫的查詢，因此不會有資料載入記憶體的行為。
+            //若指派某些會得到"明確結果"的function，如Count()、ToList()等，此時才會執行SQL查詢指令，取得查詢結果。
+            IQueryable<UserTable> ListAll = from m in _db.UserTables
+                                            select m;
+
+            // 查無資料時，IQueryable<T>會傳回一個「空集合」而不是「空（null）」
+            if (ListAll.Any() == false)
+            {
+                return NotFound();
+            }
+            else
+            {
+                return View(await ListAll.ToListAsync());
+            }
+
+        }
+
         public IActionResult Create()
         {
             return View();
@@ -26,14 +46,15 @@ namespace CRUD_Project.Controllers
 
         [HttpPost,ActionName("Create")]
         [ValidateAntiForgeryToken] // 避免CSRF攻擊
+        // [Bind(...)]可以避免 overposting attacks （過多發佈）攻擊  http://www.cnblogs.com/Erik_Xu/p/5497501.html
         public IActionResult Create([Bind("UserId, UserName, UserSex, UserBirthDay, UserMobilePhone")] UserTable _userTable)
         {
 
             if (_userTable != null && ModelState.IsValid) {  //ModelState.IsValid 通過表單驗證
 
                 _db.UserTables.Add(_userTable);  //將資料加入到資料庫的UserTable中
-                _db.SaveChanges();               //儲存變更到資料庫中
-                return RedirectToAction(nameof(List));  //導向List()方法
+                _db.SaveChanges();         
+                return RedirectToAction(nameof(List)); 
             }
             else
             {
@@ -63,7 +84,8 @@ namespace CRUD_Project.Controllers
         }
 
         [HttpPost, ActionName("Edit")]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] // 避免CSRF攻擊
+        // [Bind(...)]可以避免 overposting attacks （過多發佈）攻擊  http://www.cnblogs.com/Erik_Xu/p/5497501.html
         public IActionResult EditConfirm([Bind("UserId, UserName, UserSex, UserBirthDay, UserMobilePhone")] UserTable _userTable)
         {
             if (ModelState.IsValid) //通過表單驗證
@@ -133,26 +155,6 @@ namespace CRUD_Project.Controllers
                 ModelState.AddModelError("", "編號（_ID）驗證失敗！");
                 return View();
             }
-        }
-
-        public async Task<IActionResult> List()
-        {
-            //https://hackmd.io/@AndyShih/SJOlljYI2
-            //在IDE中寫好的IQueryable只是"查詢狀態"，此時還沒執行資料庫的查詢，因此不會有資料載入記憶體的行為。
-            //若指派某些會得到"明確結果"的function，如Count()、ToList()等，此時才會執行SQL查詢指令，取得查詢結果。
-            IQueryable<UserTable> ListAll = from m in _db.UserTables
-                                                                    select m;
-
-            // 查無資料時，IQueryable<T>會傳回一個「空集合」而不是「空（null）」
-            if (ListAll.Any() == false)
-            {
-                return NotFound();
-            }
-            else
-            {
-                return View(await ListAll.ToListAsync());
-            }
-
         }
 
         [HttpGet]
