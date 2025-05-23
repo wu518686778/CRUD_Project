@@ -2,16 +2,13 @@
 
 @{
     Layout = "_Layout";
+    ViewData["Title"] = "List";
 }
 
 <h1>List - 「多筆」User Data記錄的呈現</h1>
 
 <!DOCTYPE html>
 <html>
-<head>
-    <meta name="viewport" content="width=device-width" />
-    <title>UserList</title>
-</head>
 <body>
 <p>
         <a asp-action="Create">Create New（新增一筆記錄）</a>
@@ -44,7 +41,10 @@
                 @Html.DisplayFor(modelItem => item.UserId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.UserName)
+                        @if (!Convert.IsDBNull(item.UserName))
+                        {
+                            @Html.DisplayFor(modelItem => item.UserName)
+                        }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.UserSex)
@@ -56,10 +56,17 @@
                 @Html.DisplayFor(modelItem => item.UserMobilePhone)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
+@*                 @Html.ActionLink("Edit 編輯", "Edit", new { _ID = item.UserId }) |
+                @Html.ActionLink("Details 明細", "Details", new { _ID = item.UserId }) |
+                @Html.ActionLink("Delete 刪除", "Delete", new { _ID = item.UserId })
+                <hr /> *@
+                <!-- 錨點的寫法 https://docs.microsoft.com/zh-tw/aspnet/core/mvc/views/tag-helpers/built-in/anchor-tag-helper?view=aspnetcore-5.0 -->
+                 <h6>Tag Helper 的寫法：</h6>
+                <a asp-action="Edit" asp-route-_ID="@item.UserId">Edit 編輯</a> |
+                <a asp-action="Details" asp-route-_ID="@item.UserId">Details 明細</a> |
+                <a asp-action="Delete" asp-route-_ID="@item.UserId">Delete 刪除</a>
+             </td>
+
         </tr>
 }
     </tbody>

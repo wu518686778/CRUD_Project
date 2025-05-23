@@ -9,17 +9,16 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Details</title>
+    <title>Delete</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/WebApplication2022_NetCore8_MVC.styles.css" asp-append-version="true" />
 </head>
 <body>
 
- <h1>Details</h1>
-
+<h3>Are you sure you want to delete this?</h3>
 <div>
-     <h4>UserTable（明細）</h4>
+    <h4>UserTable（刪除）</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -53,10 +52,11 @@
             @Html.DisplayFor(model => model.UserMobilePhone)
         </dd>
     </dl>
-</div>
-<div>
-        @Html.ActionLink("Edit", "Edit", new { _ID = Model.UserId }, new { @class = "btn btn-primary" }) |
-      <a asp-action="List" class="btn btn-secondary">Back to List</a>
+    
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+         <a asp-action="List" class="btn btn-secondary">Back to List</a>
+    </form>
 </div>
 </body>
 </html>
