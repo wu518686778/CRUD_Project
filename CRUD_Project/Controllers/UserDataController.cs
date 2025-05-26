@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CRUD_Project.Models;
-using Microsoft.EntityFrameworkCore;   // Async「非同步」會用到的命名空間
+﻿using CRUD_Project.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;              // 需手動安裝NuGet 
+using Microsoft.EntityFrameworkCore;   // Async「非同步」會用到的命名空間
 
 
 namespace CRUD_Project.Controllers
@@ -25,7 +25,7 @@ namespace CRUD_Project.Controllers
             //在IDE中寫好的IQueryable只是"查詢狀態"，此時還沒執行資料庫的查詢，因此不會有資料載入記憶體的行為。
             //若指派某些會得到"明確結果"的function，如Count()、ToList()等，此時才會執行SQL查詢指令，取得查詢結果。
             IQueryable<UserTable> ListAll = from m in _db.UserTables
-                                            select m;
+                                                                    select m;
 
             // 查無資料時，IQueryable<T>會傳回一個「空集合」而不是「空（null）」
             if (ListAll.Any() == false)
@@ -177,6 +177,101 @@ namespace CRUD_Project.Controllers
             {
                 return View(ListOne.FirstOrDefault());
             }
+        }
+
+        public ActionResult IndexPage(int _ID = 1)
+        {
+            int iRecordCount = _db.UserTables.Count(); //取得資料庫中UserTable的總筆數
+            int iPageSize = 5; //每頁顯示資料筆數
+            int iNowPageCount = 0;
+
+            if(_ID > 0 || String.IsNullOrEmpty(_ID.ToString()))
+            {
+                iNowPageCount = (int)((_ID - 1) * iPageSize); // 計算目前頁面要顯示的資料起始位置
+            }
+
+            IQueryable<UserTable> ListAll = (from m in _db.UserTables
+                                                                     orderby m.UserId 
+                                                                     select m).Skip(iNowPageCount).Take(iPageSize);    // .Skip() 從哪裡開始， .Take()呈現幾筆記錄
+
+
+            if (ListAll.Any() == false)
+            {
+                return NotFound();  
+            }
+            else
+            {
+                int iTotalPage;
+                if ((iRecordCount % iPageSize) > 0)
+                {  
+                    iTotalPage = ((iRecordCount / iPageSize) + 1);   //  如果無法整除，則需要多出一頁來呈現。 
+                }
+                else
+                {
+                    iTotalPage = (iRecordCount / iPageSize);   
+                }
+
+                System.Text.StringBuilder sbPageList= new System.Text.StringBuilder();
+                if (iTotalPage > 0)
+                {
+                    sbPageList.Append("<div align=\"center\">");
+
+                    //** 可以把檔名刪除，只留下 ?_ID=  即可！一樣會運作，但IE 11會出現 JavaScript錯誤。**
+                    //** 抓到目前網頁的「檔名」。 System.IO.Path.GetFileName(Request.PhysicalPath) **
+                    if (_ID > 1)
+                    {
+                        sbPageList.Append("<a href=\"?_ID=" + (_ID - 1) + "\">[<<<上一頁]</a>");
+                    }
+                    sbPageList.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><a href=\"http://127.0.0.1/\">[首頁]</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                    if (_ID < iTotalPage)
+                    {
+                        sbPageList.Append("<a href=\"?_ID=" + (_ID + 1) + "\">[下一頁>>>]</a>");
+                    }
+
+                    sbPageList.Append("<hr width='97%' size=1>");
+
+                    int block_page = 0;
+                    block_page = _ID / 10;   //--只取除法的整數成果（商），若有餘數也不去管它。
+
+                    if (block_page > 0)
+                    {
+                        sbPageList.Append("<a href=\"_ID=" + (((block_page - 1) * 10) + 9) + "\"> [前十頁<<]  </a>&nbsp;&nbsp;");
+                    }
+
+                    for (int K = 0; K <= 10; K++)
+                    {
+                        if ((block_page * 10 + K) <= iTotalPage)
+                        {   //--- Pages 資料的總頁數。共需「幾頁」來呈現所有資料？
+                            if (((block_page * 10) + K) == _ID)
+                            {   //--- id 就是「目前在第幾頁」
+                                sbPageList.Append("[<b>" + _ID + "</b>]" + "&nbsp;&nbsp;&nbsp;");
+                            }
+                            else
+                            {
+                                if (((block_page * 10) + K) != 0)
+                                {
+                                    sbPageList.Append("<a href=\"?_ID=" + (block_page * 10 + K) + "\">" + (block_page * 10 + K) + "</a>");
+                                    sbPageList.Append("&nbsp;&nbsp;&nbsp;");
+                                }
+                            }
+                        }
+                    }  //for迴圈 end
+
+                    if ((block_page < (iTotalPage / 10)) & (iTotalPage >= (((block_page + 1) * 10) + 1)))
+                    {
+                        sbPageList.Append("&nbsp;&nbsp;<a href=\"?id=" + ((block_page + 1) * 10 + 1) + "\">  [>>後十頁]  </a>");
+                    }
+                    sbPageList.Append("</div>");
+
+                }
+
+     
+                ViewBag.PageList = sbPageList.ToString();
+
+                return View(ListAll.ToList()); 
+            }
+
+                
         }
 
 

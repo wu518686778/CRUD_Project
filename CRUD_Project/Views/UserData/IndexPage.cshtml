@@ -1,14 +1,14 @@
 ﻿@model IEnumerable<CRUD_Project.Models.UserTable>
 
 @{
-    ViewData["Title"] = "List";
+    ViewData["Title"] = "IndexPage";
     Layout = "_Layout";
 }
 
-<h1>List - 「多筆」User Data記錄的呈現</h1>
+<h1>IndexPage</h1>
 
 <p>
-    <a asp-action="Create">Create New（新增一筆記錄）</a>
+    <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
     <thead>
@@ -39,7 +39,8 @@
                     @Html.DisplayFor(modelItem => item.UserId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.UserName)
+                    @*  @Html.DisplayFor(modelItem => item.UserName) *@
+                    <a asp-action="Details" asp-route-_ID="@item.UserId">@Html.DisplayFor(modelItem => item.UserName)</a>
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.UserSex)
@@ -51,17 +52,17 @@
                     @Html.DisplayFor(modelItem => item.UserMobilePhone)
                 </td>
                 <td>
-                    @*                 @Html.ActionLink("Edit 編輯", "Edit", new { _ID = item.UserId }) |
-                @Html.ActionLink("Details 明細", "Details", new { _ID = item.UserId }) |
-                @Html.ActionLink("Delete 刪除", "Delete", new { _ID = item.UserId })
-                <hr /> *@
-                    <!-- 錨點的寫法 https://docs.microsoft.com/zh-tw/aspnet/core/mvc/views/tag-helpers/built-in/anchor-tag-helper?view=aspnetcore-5.0 -->
-                    <h6>Tag Helper 的寫法：</h6>
+                    @*                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ }) *@
                     <a asp-action="Edit" asp-route-_ID="@item.UserId">Edit 編輯</a> |
-                    <a asp-action="Details" asp-route-_ID="@item.UserId">Details 明細</a> |
                     <a asp-action="Delete" asp-route-_ID="@item.UserId">Delete 刪除</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<br />
+<br />
+@Html.Raw(ViewBag.PageList)     @* 畫面最下方的「分頁列」 *@
