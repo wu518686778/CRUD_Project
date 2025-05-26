@@ -54,7 +54,8 @@ namespace CRUD_Project.Controllers
 
                 _db.UserTables.Add(_userTable);  //將資料加入到資料庫的UserTable中
                 _db.SaveChanges();         
-                return RedirectToAction(nameof(List)); 
+                return RedirectToAction(nameof(List));
+                //return RedirectToAction(nameof(IndexPage)); 
             }
             else
             {
@@ -103,7 +104,8 @@ namespace CRUD_Project.Controllers
                     ut.UserMobilePhone = _userTable.UserMobilePhone;
                     _db.SaveChanges(); 
                 }
-                return RedirectToAction(nameof(List)); 
+                return RedirectToAction(nameof(List));
+                //return RedirectToAction(nameof(IndexPage)); 
             }
             else
             {
@@ -148,6 +150,7 @@ namespace CRUD_Project.Controllers
                 }
 
                 return RedirectToAction(nameof(List));
+                //return RedirectToAction(nameof(IndexPage)); 
 
             }
             else
@@ -216,13 +219,11 @@ namespace CRUD_Project.Controllers
                 {
                     sbPageList.Append("<div align=\"center\">");
 
-                    //** 可以把檔名刪除，只留下 ?_ID=  即可！一樣會運作，但IE 11會出現 JavaScript錯誤。**
-                    //** 抓到目前網頁的「檔名」。 System.IO.Path.GetFileName(Request.PhysicalPath) **
                     if (_ID > 1)
                     {
                         sbPageList.Append("<a href=\"?_ID=" + (_ID - 1) + "\">[<<<上一頁]</a>");
                     }
-                    sbPageList.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><a href=\"http://127.0.0.1/\">[首頁]</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                    sbPageList.Append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><a href=\"https://localhost:7228/\">[首頁]</a></b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
                     if (_ID < iTotalPage)
                     {
                         sbPageList.Append("<a href=\"?_ID=" + (_ID + 1) + "\">[下一頁>>>]</a>");
@@ -235,7 +236,7 @@ namespace CRUD_Project.Controllers
 
                     if (block_page > 0)
                     {
-                        sbPageList.Append("<a href=\"_ID=" + (((block_page - 1) * 10) + 9) + "\"> [前十頁<<]  </a>&nbsp;&nbsp;");
+                        sbPageList.Append("<a href=\"?_ID=" + (((block_page - 1) * 10) + 9) + "\">[前十頁<<]</a>&nbsp;&nbsp;");
                     }
 
                     for (int K = 0; K <= 10; K++)
@@ -255,11 +256,11 @@ namespace CRUD_Project.Controllers
                                 }
                             }
                         }
-                    }  //for迴圈 end
+                    }  
 
                     if ((block_page < (iTotalPage / 10)) & (iTotalPage >= (((block_page + 1) * 10) + 1)))
                     {
-                        sbPageList.Append("&nbsp;&nbsp;<a href=\"?id=" + ((block_page + 1) * 10 + 1) + "\">  [>>後十頁]  </a>");
+                        sbPageList.Append("&nbsp;&nbsp;<a href=\"?_ID=" + ((block_page + 1) * 10 + 1) + "\">[>>後十頁]</a>");
                     }
                     sbPageList.Append("</div>");
 
@@ -270,10 +271,34 @@ namespace CRUD_Project.Controllers
 
                 return View(ListAll.ToList()); 
             }
-
-                
+     
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] 
+        public ActionResult Search(string strSearchWord)
+        {
+            ViewData["SW"] = strSearchWord;
+
+            if (String.IsNullOrEmpty(strSearchWord) && ModelState.IsValid)
+            { 
+                return Content("請輸入「關鍵字」才能搜尋");
+            }
+
+            IQueryable<UserTable> ListAll = from m in _db.UserTables
+                                                                    where m.UserName.Contains(strSearchWord)
+                                                                    orderby m.UserId
+                                                                    select m;
+            if (ListAll.Any() == false)  
+            {   
+                return NotFound();
+            }
+            else
+            {
+                return View(ListAll);
+            }
+        }
 
     }
 }

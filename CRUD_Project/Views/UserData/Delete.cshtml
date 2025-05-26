@@ -21,41 +21,41 @@
     <h4>UserTable（刪除）</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+         <dt class="col-sm-2 offset-sm-1">
             @Html.DisplayNameFor(model => model.UserId)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.UserId)
         </dd>
-        <dt class = "col-sm-2">
+         <dt class="col-sm-2 offset-sm-1">
             @Html.DisplayNameFor(model => model.UserName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.UserName)
         </dd>
-        <dt class = "col-sm-2">
+         <dt class="col-sm-2 offset-sm-1">
             @Html.DisplayNameFor(model => model.UserSex)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.UserSex)
         </dd>
-        <dt class = "col-sm-2">
+         <dt class="col-sm-2 offset-sm-1">
             @Html.DisplayNameFor(model => model.UserBirthDay)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.UserBirthDay)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2 offset-sm-1">
             @Html.DisplayNameFor(model => model.UserMobilePhone)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class = "col-sm-9">
             @Html.DisplayFor(model => model.UserMobilePhone)
         </dd>
     </dl>
-    
-    <form asp-action="Delete">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="List" class="btn btn-secondary">Back to List</a>|
+
+     <form asp-action="Delete" class="offset-sm-1">
+         <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="List" class="btn btn-secondary">Back to List</a> |
         <a asp-action="IndexPage" class="btn btn-secondary">Back to IndexPage</a>
     </form>
 </div>
