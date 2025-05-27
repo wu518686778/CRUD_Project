@@ -8,6 +8,20 @@
 <h1>IndexPage</h1>
 
 <p>
+    <h3> 請輸入關鍵字，搜尋「UserName」欄位</h3>
+    <form asp-action="Search">
+
+        <div class="form-group">
+            <input type="text" name="strSearchWord" />
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary" />
+        </div>
+
+    </form>
+    <br />
+    <hr />
+    <br />
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">

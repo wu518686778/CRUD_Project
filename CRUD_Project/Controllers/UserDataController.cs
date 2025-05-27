@@ -287,9 +287,10 @@ namespace CRUD_Project.Controllers
             }
 
             IQueryable<UserTable> ListAll = from m in _db.UserTables
-                                                                    where m.UserName.Contains(strSearchWord)
+                                                                    where m.UserName != null && m.UserName.Contains(strSearchWord)
                                                                     orderby m.UserId
                                                                     select m;
+
             if (ListAll.Any() == false)  
             {   
                 return NotFound();
@@ -298,6 +299,54 @@ namespace CRUD_Project.Controllers
             {
                 return View(ListAll);
             }
+        }
+
+
+        public ActionResult Search_Multi()
+        {
+            return View(); 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Search_Multi(UserTable _userTable)
+        {
+
+            string? strUserName = _userTable.UserName;
+            string? strUserMobilePhone = _userTable.UserMobilePhone;
+
+  
+            if (String.IsNullOrWhiteSpace(strUserName) && String.IsNullOrWhiteSpace(strUserMobilePhone) && ModelState.IsValid)
+            {
+                return Content("請輸入「關鍵字」才能搜尋");
+            }
+
+          ViewData["SW"] = "User Name= " + strUserName + ", Phone= " + strUserMobilePhone;
+
+            IQueryable<UserTable> ListAll = _db.UserTables.Select(m => m);
+
+            if (!string.IsNullOrWhiteSpace(strUserName) )
+            {
+                ListAll = ListAll.Where(m => m.UserName != null && m.UserName.Contains(strUserName));
+            }
+
+            if (!string.IsNullOrWhiteSpace(strUserMobilePhone))
+            {
+                ListAll = ListAll.Where(m => m.UserMobilePhone != null && m.UserMobilePhone.Contains(strUserMobilePhone));
+            }
+
+            ListAll = ListAll.OrderBy(m => m.UserId); 
+
+
+            if (ListAll.Any() == false)  
+            {   
+                return NotFound();
+            }
+            else
+            {
+                return View("Search", ListAll);
+            }
+
         }
 
     }
