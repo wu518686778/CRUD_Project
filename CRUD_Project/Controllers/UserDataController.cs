@@ -283,7 +283,7 @@ namespace CRUD_Project.Controllers
 
             if (String.IsNullOrEmpty(strSearchWord) && ModelState.IsValid)
             { 
-                return Content("請輸入「關鍵字」才能搜尋");
+                return Content("請輸入「關鍵字」才能搜尋!");
             }
 
             IQueryable<UserTable> ListAll = from m in _db.UserTables
@@ -318,7 +318,7 @@ namespace CRUD_Project.Controllers
   
             if (String.IsNullOrWhiteSpace(strUserName) && String.IsNullOrWhiteSpace(strUserMobilePhone) && ModelState.IsValid)
             {
-                return Content("請輸入「關鍵字」才能搜尋");
+                return Content("請輸入「關鍵字」才能搜尋!");
             }
 
           ViewData["SW"] = "User Name= " + strUserName + ", Phone= " + strUserMobilePhone;
@@ -344,7 +344,7 @@ namespace CRUD_Project.Controllers
             }
             else
             {
-                return View("Search", ListAll);
+                return View("Search", ListAll); //指定檢視名稱為Search，並傳入查詢結果ListAll
             }
 
         }
