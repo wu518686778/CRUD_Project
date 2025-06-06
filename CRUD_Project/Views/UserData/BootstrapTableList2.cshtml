@@ -1,0 +1,151 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>BootstrapTableList2</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Table CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.4/bootstrap-table.min.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        #toolbar {
+            margin: 0 0 15px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Bootstrap Table 匯出功能示例</h2>
+
+        <div id="toolbar" class="mb-3">
+            <select class="form-select" style="width: 200px;">
+                <option value="">Export Basic</option>
+                <option value="all">Export All</option>
+                <option value="selected">Export Selected</option>
+            </select>
+        </div>
+
+        <table id="table"
+               data-show-export="true"
+               data-pagination="true"
+               data-click-to-select="true"
+               data-toolbar="#toolbar"
+               data-show-toggle="true"
+               data-show-columns="true"
+               data-show-footer="true"
+               class="table table-striped">
+        </table>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Table JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.4/bootstrap-table.min.js"></script>
+    <!-- Bootstrap Table Export Extension -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.21.4/extensions/export/bootstrap-table-export.min.js"></script>
+    <!-- TableExport -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tableexport/5.2.0/js/tableexport.min.js"></script>
+
+    <script>
+        // 模擬數據
+        const sampleData = [
+          { id: 1, name: 'Product A', price: '$12.50' },
+          { id: 2, name: 'Product B', price: '$23.75' },
+          { id: 3, name: 'Product C', price: '$8.99' },
+          { id: 4, name: 'Product D', price: '$45.00' },
+          { id: 5, name: 'Product E', price: '$15.25' },
+          { id: 6, name: 'Product F', price: '$67.80' },
+          { id: 7, name: 'Product G', price: '$34.90' },
+          { id: 8, name: 'Product H', price: '$21.45' }
+        ];
+
+        function idFormatter() {
+          return 'Total';
+        }
+
+        function nameFormatter(data) {
+          return data.length;
+        }
+
+        function priceFormatter(data) {
+          const field = this.field;
+          return `$${data.map(function (row) {
+            return +row[field].substring(1);
+          }).reduce(function (sum, i) {
+            return sum + i;
+          }, 0).toFixed(2)}`;
+        }
+
+        $(function() {
+          // 初始化表格
+          function initTable(exportDataType) {
+            $('#table').bootstrapTable('destroy').bootstrapTable({
+              data: sampleData,
+              exportDataType: exportDataType || 'basic',
+              exportTypes: ['json', 'xml', 'csv', 'txt', 'excel'],
+              showExport: true,
+              exportOptions: {
+                ignoreColumn: [0],
+                fileName: 'table_export_' + new Date().getTime(),
+                worksheetName: 'Sheet1',
+                tableName: 'myTable',
+                excelstyles: ['background-color', 'color', 'font-size', 'font-weight']
+              },
+              columns: [
+                {
+                  field: 'state',
+                  checkbox: true,
+                  visible: exportDataType === 'selected'
+                },
+                {
+                  field: 'id',
+                  title: 'ID',
+                  sortable: true,
+                  footerFormatter: idFormatter
+                },
+                {
+                  field: 'name',
+                  title: 'Item Name',
+                  sortable: true,
+                  footerFormatter: nameFormatter
+                },
+                {
+                  field: 'price',
+                  title: 'Item Price',
+                  sortable: true,
+                  footerFormatter: priceFormatter
+                }
+              ]
+            });
+          }
+
+          // 綁定選擇器變化事件
+          $('#toolbar').find('select').change(function () {
+            const selectedValue = $(this).val();
+            initTable(selectedValue);
+          });
+
+          // 初始化
+          initTable();
+        });
+    </script>
+</body>
+</html>

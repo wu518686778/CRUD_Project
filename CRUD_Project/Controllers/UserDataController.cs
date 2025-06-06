@@ -349,5 +349,16 @@ namespace CRUD_Project.Controllers
 
         }
 
+        //----------------------------------------------------------------------
+        public ActionResult BootstrapTableList()
+        {
+            return View();
+        }
+
+        public ActionResult BootstrapTableList2()
+        {
+            return View();
+        }
     }
+
 }
