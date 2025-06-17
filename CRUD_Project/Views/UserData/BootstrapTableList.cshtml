@@ -23,11 +23,11 @@
            data-toolbar="#toolbar"
            data-show-toggle="true"
            data-show-columns="true"
-           data-show-footer="true"
-           data-url="https://examples.wenzhixin.net.cn/examples/bootstrap_table/data">
+           data-show-footer="true">
        </table>
 
 </div>
+
 
 <!-- Bootstrap Table JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/bootstrap-table.min.js"></script>
@@ -39,53 +39,47 @@
 <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
 
 <script>
-    function idFormatter () {
-      return 'Total'
-    }
 
-    function nameFormatter (data) {
-      return data.length
-    }
-
-    function priceFormatter (data) {
-      const field = this.field
-
-      return `$${data.map(function (row) {
-        return +row[field].substring(1)
-      }).reduce(function (sum, i) {
-        return sum + i
-      }, 0)}`
-    }
-
-    $(function() {
-      $('#toolbar').find('select').change(function () {
-        $('#EmpTable').bootstrapTable('destroy').bootstrapTable({
-          exportDataType: $(this).val(),
-          exportTypes: ['json', 'xml', 'csv', 'txt', 'excel', 'pdf'],
-          columns: [
-            {
-              field: 'state',
-              checkbox: true,
-              visible: $(this).val() === 'selected'
-            },
-            {
-              field: 'id',
-              title: 'ID',
-              footerFormatter: idFormatter
-            },
-            {
-              field: 'name',
-              title: 'Item Name',
-              footerFormatter: nameFormatter
-            },
-            {
-              field: 'price',
-              title: 'Item Price',
-              footerFormatter: priceFormatter
-            }
-          ]
-        })
-      }).trigger('change')
+     $(function () {
+        $('#toolbar').find('select').change(function () {
+            $('#EmpTable').bootstrapTable('destroy').bootstrapTable({
+                method: 'get',
+                url: '/UserData/GetUserData', 
+                contentType: 'application/json',
+                dataType: 'json',
+                exportDataType: $(this).val(),
+                exportTypes: ['json', 'xml', 'csv', 'txt', 'excel', 'pdf'],
+                pagination: true,
+                sidePagination: 'server',
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                        visible: $(this).val() === 'selected'
+                    },
+                    {
+                        field: 'userId',
+                        title: 'ID',
+                    },
+                    {
+                        field: 'userName',
+                        title: '姓名',
+                    },
+                    {
+                        field: 'userSex',
+                        title: '性別',
+                    },
+                    {
+                        field: 'userBirthDay',
+                        title: '生日',
+                    },
+                    {
+                        field: 'userMobilePhone',
+                        title: '手機',
+                    }
+                ]
+            })
+        }).trigger('change')
     })
 
 </script>

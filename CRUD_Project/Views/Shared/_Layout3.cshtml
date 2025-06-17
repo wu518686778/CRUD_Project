@@ -12,12 +12,19 @@
     <link rel="stylesheet" href="~/lib/startbootstrap/css/style.min.css"/>
     <link rel="stylesheet" href="~/lib/startbootstrap/css/styles.css"/>
     <script src="~/lib/startbootstrap/js/all.js"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/bootstrap-table.min.css">
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/startbootstrap/js/scripts.js"></script>
 </head>
+
 <body class="sb-nav-fixed">
     <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3" asp-controller="Home" asp-action="Index">
-            <img src="~/images/island_Logo.svg" alt="Island Logo" class="img-fluid" style="padding-top: 20px;" />
+            <img src="~/images/island_Logo.svg" alt="Island Logo" class="img-fluid" style="height: 50px;" />
         </a>
 
         <!-- Sidebar Toggle-->
@@ -110,12 +117,6 @@
         </div>
 
     </div>
-
-
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/startbootstrap/js/scripts.js"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

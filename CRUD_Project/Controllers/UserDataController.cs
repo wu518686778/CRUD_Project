@@ -359,6 +359,20 @@ namespace CRUD_Project.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public IActionResult GetUserData(int offset, int limit)
+        {
+            var data = _db.UserTables
+                 .Skip(offset)
+                 .Take(limit)
+                 .ToList();
+
+            var total = _db.UserTables.Count();
+
+            return Json(new { total = total, rows = data });
+        }
+
     }
 
 }
