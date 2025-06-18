@@ -33,10 +33,13 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/bootstrap-table.min.js"></script>
 <!-- Bootstrap Table Export Extension -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap-table@1.24.1/dist/extensions/export/bootstrap-table-export.min.js"></script>
-<!-- TableExport -->
+@* <!-- TableExport -->
 <script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/tableExport.min.js"></script>
 <!-- PdfExport -->
-<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tableexport.jquery.plugin@1.29.0/libs/jsPDF/jspdf.umd.min.js"></script> *@
+<script src="~/lib/pdfmake/pdfmake.min.js" asp-append-version="true"></script>
+<script src="~/lib/pdfmake/gbsn00lp_fonts.js" asp-append-version="true"></script>
+<script src="~/lib/tableExport.min.js" asp-append-version="true"></script>
 
 <script>
 
@@ -49,6 +52,10 @@
                 dataType: 'json',
                 exportDataType: $(this).val(),
                 exportTypes: ['json', 'xml', 'csv', 'txt', 'excel', 'pdf'],
+                exportOptions: {
+                    fileName: 'ExportPDF',
+                    pdfmake: {enabled:true},
+                },
                 pagination: true,
                 sidePagination: 'server',
                 columns: [
