@@ -359,6 +359,10 @@ namespace CRUD_Project.Controllers
         {
             return View();
         }
+        public ActionResult BootstrapTableList3()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult GetUserData(int offset, int limit)

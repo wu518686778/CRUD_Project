@@ -20,16 +20,19 @@
 
             @if (currentController == "UserData" && currentAction == "List")
             {
-                <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="List">人員清單</a></li>
+                <li class="breadcrumb-item active" aria-current="page">人員清單</li>
+            @*     <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="List">人員清單</a></li> *@
             }
             else if (currentController == "UserData" && currentAction == "IndexPage")
             {
                 <li class="breadcrumb-item active" aria-current="page">商品分支</li>
-                <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="IndexPage">人員清單(分頁)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">人員清單(分頁)</li>
+                @* <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="IndexPage">人員清單(分頁)</a></li> *@
             }
             else if (currentController == "UserData" && currentAction == "BootstrapTableList")
             {
-                <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="BootstrapTableList">清單(Bootstrap table)</a></li>
+                <li class="breadcrumb-item active" aria-current="page">清單(Bootstrap table)</li>
+                @* <li class="breadcrumb-item"><a asp-controller="UserData" asp-action="BootstrapTableList">清單(Bootstrap table)</a></li> *@
             }
 
         </ol>
