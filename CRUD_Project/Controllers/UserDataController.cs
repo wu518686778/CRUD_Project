@@ -1,7 +1,9 @@
 ﻿using CRUD_Project.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;              // 需手動安裝NuGet 
-using Microsoft.EntityFrameworkCore;   // Async「非同步」會用到的命名空間
+using Microsoft.EntityFrameworkCore;// Async「非同步」會用到的命名空間
+using Newtonsoft.Json;
+using System.Data;   
 
 
 namespace CRUD_Project.Controllers
@@ -359,11 +361,7 @@ namespace CRUD_Project.Controllers
         {
             return View();
         }
-        public ActionResult BootstrapTableList3()
-        {
-            return View();
-        }
-
+ 
         [HttpGet]
         public IActionResult GetUserData(int offset, int limit)
         {
@@ -376,6 +374,21 @@ namespace CRUD_Project.Controllers
 
             return Json(new { total = total, rows = data });
         }
+
+
+        public ActionResult Customer()
+        {
+            return View();
+        }
+
+        //public ActionResult GetEAP_Message(string LOTID)
+        //{
+        //    DataTable dtResult = new DataTable();
+        //    dtResult = csSorter_Posting_Report.GetEAP_Message(LOTID);
+        //    var varJson = JsonConvert.SerializeObject(dtResult);
+        //    return Json(varJson, JsonRequestBehavior.AllowGet);
+        //}
+
 
     }
 
