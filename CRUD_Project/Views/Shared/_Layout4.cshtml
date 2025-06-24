@@ -12,8 +12,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     <!-- startbootstrap -->
-    <link rel="stylesheet" href="~/lib/startbootstrap/css/style.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/lib/startbootstrap/css/styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/startbootstrap/css/style.min.css" asp-append-version="true" />
     <script src="~/lib/startbootstrap/js/all.js"></script>
     <script src="~/lib/startbootstrap/js/scripts.js"></script>
 </head>
@@ -68,6 +68,10 @@
                         <a class="nav-link" asp-controller="UserData" asp-action="Customer">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             客戶管理
+                        </a>
+                        <a class="nav-link" asp-controller="UserData" asp-action="CustModel">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            客戶測試模板
                         </a>
 
                         <div class="sb-sidenav-menu-heading">商品</div>

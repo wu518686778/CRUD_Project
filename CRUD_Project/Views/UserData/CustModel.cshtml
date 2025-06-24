@@ -1,0 +1,172 @@
+﻿@{
+    ViewData["Title"] = "Customer";
+    Layout = "~/Views/Shared/_Layout4.cshtml";
+}
+
+
+<!-- Bootstrap Select -->
+<link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css" asp-append-version="true" />
+@* <script src="~/lib/bootstrap-table/dist/js/bootstrap-select.min.js" asp-append-version="true"></script> *@
+<script src="~/lib/bootstrap-select.min.js" asp-append-version="true"></script>
+
+
+<div class="container-fluid overflow-hidden pb-5">
+    <!-- 搜尋區域 -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <a role="button"
+               class="collapse-btn d-flex justify-content-between align-items-center text-decoration-none text-white"
+               data-bs-toggle="collapse"
+               data-bs-target="#queryCard_two"
+               aria-expanded="true"
+               aria-controls="queryCard_two">
+                <span><i class="fas fa-search"></i> 搜尋條件</span>
+                <i class="fas fa-plus fa-lg menu__icon--open"></i>
+                <i class="fas fa-minus fa-lg menu__icon--close"></i>
+            </a>
+        </div>
+
+        <div class="card-body collapse show" id="queryCard_two">
+            <div class="row g-4 mt-3">
+                <!-- ID -->
+                <div class="col-md-4 d-flex align-items-center">
+                    <label class="form-label fw-bold mb-0 me-3" style="width: 60px;">ID:</label>
+                    <input class="form-control flex-grow-1"
+                           type="text"
+                           placeholder="請輸入ID"
+                           id="txtUserID">
+                </div>
+
+                <!-- 姓名 -->
+                <div class="col-md-4 d-flex align-items-center">
+                    <label class="form-label fw-bold mb-0 me-3" style="width: 60px;">姓名:</label>
+                    <input class="form-control flex-grow-1"
+                           type="text"
+                           placeholder="請輸入姓名"
+                           id="txtUserName">
+                </div>
+
+                <div class="col-md-4 d-flex align-items-center">
+                </div>
+
+                <!-- 電話 -->
+                <div class="col-md-4 d-flex align-items-center">
+                    <label class="form-label fw-bold mb-0 me-3" style="width: 60px;">電話:</label>
+                    <input class="form-control flex-grow-1"
+                           type="text"
+                           placeholder="請輸入電話"
+                           id="txtPhone">
+                </div>
+
+                <!-- 性別 -->
+                <div class="col-md-4 d-flex align-items-center">
+                    <label class="form-label fw-bold mb-0 me-3" style="width: 60px;">性別:</label>
+                    <select name="txtSexChecker"
+                            id="txtSexChecker"
+                            class="form-select flex-grow-1">
+                        <option value="">請選擇性別</option>
+                        <option value="M">男性</option>
+                        <option value="F">女性</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 ms-3 mt-4">
+                <button type="button" class="btn btn-success" id="btnQuery">Query</button>
+                <button type="button" class="btn btn-warning" id="btnExport2">Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查詢結果 -->
+    <div class="card mt-3">
+        <div class="card-header">
+            <a role="button"
+               class="collapse-btn d-flex justify-content-between align-items-center text-decoration-none text-white"
+               data-bs-toggle="collapse"
+               data-bs-target="#queryCard_two_Result"
+               aria-expanded="true"
+               aria-controls="queryCard_two_Result">
+                <span><i class="fas fa-table"></i> 查詢結果</span>
+                <i class="fas fa-plus fa-lg menu__icon--open"></i>
+                <i class="fas fa-minus fa-lg menu__icon--close"></i>
+            </a>
+        </div>
+        <div class="card-body collapse show p-0" id="queryCard_two_Result">
+            <div id="divSorter_List" class="table-responsive-lg">
+                <table class="table table-sm table-hover table-bordered mb-0" id="tbSorter_List">
+                    <thead id="thSorter_List" class="align-middle">
+                        <tr>
+                            <th class="fw-bold" style="min-width:40px;">操作</th>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>性別</th>
+                            <th>生日</th>
+                            <th>電話</th>
+                        </tr>
+                    </thead>
+                    <tbody id="Sorter_ListBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="MSGModal" tabindex="-1" aria-labelledby="MSGModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="MSGModalLabel">EAP 訊息內容</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="divSorter_MSG" class="table-responsive-lg">
+                        <table class="table table-sm table-hover table-bordered" id="tbSorter_MSG">
+                            <thead id="thSorter_MSG" class="align-middle">
+                                <tr>
+                                    <th>MESSAGETYPE</th>
+                                    <th>EVENTTIME</th>
+                                    <th>EQPID</th>
+                                    <th>MESSAGE</th>
+                                    <th>PORT</th>
+                                    <th>CASSETTEID</th>
+                                    <th>LOTID</th>
+                                    <th>MESMESSAGE</th>
+                                    <th>LINECODE</th>
+                                </tr>
+                            </thead>
+                            <tbody id="Sorter_MSGBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    /*--摺疊icon 控制*/
+    [aria-expanded="false"] .menu__icon--open {
+        display: inline;
+    }
+
+    [aria-expanded="false"] .menu__icon--close {
+        display: none;
+    }
+
+    [aria-expanded="true"] .menu__icon--open {
+        display: none;
+    }
+
+    [aria-expanded="true"] .menu__icon--close {
+        display: inline;
+    }
+
+    .card-header {
+        background-color: #428bca
+    }
+</style> 

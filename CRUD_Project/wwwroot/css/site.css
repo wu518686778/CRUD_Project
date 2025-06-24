@@ -20,32 +20,3 @@ html {
 body {
   margin-bottom: 60px;
 }
-
-/*--ºPÅ|icon ±±¨î*/
-
-[aria-expanded="false"] .menu__icon--open {
-    display: inline;
-}
-
-
-
-[aria-expanded="false"] .menu__icon--close {
-    display: none;
-}
-
-
-
-[aria-expanded="true"] .menu__icon--open {
-    display: none;
-}
-
-
-
-[aria-expanded="true"] .menu__icon--close {
-    display: inline;
-}
-
-
-.card-header {
-    background-color: #428bca
-}

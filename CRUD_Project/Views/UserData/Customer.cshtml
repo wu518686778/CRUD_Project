@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout4.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-
 <!-- Bootstrap Table  -->
 <link rel="stylesheet" href="~/lib/bootstrap-table/dist/bootstrap-table.min.css" asp-append-version="true" />
 
@@ -14,10 +12,6 @@
 <script src="~/lib/bootstrap-table/dist/bootstrap-table-locale-all.min.js" asp-append-version="true"></script>
 <script src="~/lib/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js" asp-append-version="true"></script>
 
-<!-- Bootstrap Select -->
-<link rel="stylesheet" href="~/lib/bootstrap-select/dist/css/bootstrap-select.min.css" asp-append-version="true" />
-@* <script src="~/lib/bootstrap-table/dist/js/bootstrap-select.min.js" asp-append-version="true"></script> *@
-<script src="~/lib/bootstrap-select.min.js" asp-append-version="true"></script>
 
 <div class="container-fluid">
 
@@ -29,6 +23,7 @@
         </button>
     </div>
 
+    <!-- 客戶資訊 -->
     <table id="tbCustmerInfo"
            data-toolbar="#toolbar"
            data-search="true"
@@ -53,10 +48,49 @@
 
 </div>
 
+<!-- 人員資訊 Modal -->
+<div class="modal fade" id="peopleModal" tabindex="-1" role="dialog" aria-labelledby="peopleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="peopleModalLabel">人員詳細資訊</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- 人員資訊 Table -->
+                <table id="tbPeopleInfo"
+                        data-search="true"
+                        data-show-refresh="true"
+                        data-show-toggle="false"
+                        data-show-fullscreen="false"
+                        data-show-columns="true"
+                        data-show-columns-toggle-all="true"
+                        data-detail-view="false"
+                        data-show-export="true"
+                        data-click-to-select="false"
+                        data-minimum-count-columns="1"
+                        data-show-pagination-switch="false"
+                        data-pagination="true"
+                        data-id-field="id"
+                        data-page-list="[5, 10, 25, 50]"
+                        data-show-footer="true"
+                        data-side-pagination="client">
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const $table = $('#tbCustmerInfo')
     const $remove = $('#remove')
     let selections = []
+    let $peopleTable // 延遲初始化
 
     function getIdSelections () {
       return $.map($table.bootstrapTable('getSelections'), function (row) {
@@ -87,6 +121,9 @@
         '</a>  ',
         '<a class="remove" href="javascript:void(0)" title="Remove">',
         '<i class="fa fa-trash"></i>',
+        '</a>  ',
+        '<a class="people" href="javascript:void(0)" title="People">',
+        '<i class="fas fa-address-card"></i>',
         '</a>'
       ].join('')
     }
@@ -100,22 +137,202 @@
           field: 'id',
           values: [row.id]
         })
+      },
+       'click .people' (e, value, row) {
+        // 設定 Modal 標題
+        $('#peopleModalLabel').text(`${row.userName} - 人員詳細資訊`);
+        
+        // 初始化人員資訊表格
+        initPeopleTable(row.userId);
+        
+        // 顯示 Modal
+        $('#peopleModal').modal('show');
       }
     }
 
+     // 初始化人員資訊表格
+    function initPeopleTable(userId) {
+        // 在這裡初始化 $peopleTable
+        if (!$peopleTable) {
+            $peopleTable = $('#tbPeopleInfo');
+        }
 
-    function initTable () {
+        $peopleTable.bootstrapTable('destroy').bootstrapTable({
+            method: 'get',
+            url: `/UserData/GetPeopleData/${userId}`, // 根據 userId 獲取人員資訊
+            height: 400,
+            exportTypes: ['json', 'txt', 'excel'],
+            locale: "zh-TW",
+            columns: [
+                {
+                    field: 'id',
+                    title: 'ID',
+                    align: 'center',
+                    valign: 'middle',
+                    sortable: true,
+                    width: 80
+                },
+                {
+                    field: 'name',
+                    title: '姓名',
+                    sortable: true,
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    field: 'department',
+                    title: '部門',
+                    sortable: true,
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    field: 'position',
+                    title: '職位',
+                    sortable: true,
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    field: 'email',
+                    title: 'Email',
+                    sortable: true,
+                    align: 'center',
+                    width: 200
+                },
+                {
+                    field: 'phone',
+                    title: '電話',
+                    sortable: true,
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    field: 'joinDate',
+                    title: '到職日期',
+                    sortable: true,
+                    align: 'center',
+                    width: 120
+                },
+                {
+                    field: 'status',
+                    title: '狀態',
+                    sortable: true,
+                    align: 'center',
+                    width: 80,
+                    formatter: function(value) {
+                        if (value === 'active') {
+                            return '<span class="badge badge-success">在職</span>';
+                        } else if (value === 'inactive') {
+                            return '<span class="badge badge-danger">離職</span>';
+                        } else {
+                            return '<span class="badge badge-warning">其他</span>';
+                        }
+                    }
+                }
+            ],
+            onLoadError: function(status) {
+                console.log('載入人員資料時發生錯誤:', status);
+                // 可以在這裡顯示錯誤訊息或載入模擬資料
+                loadMockPeopleData();
+            }
+        });
+    }
+
+    // 載入模擬人員資料 (當 API 無法使用時)
+    function loadMockPeopleData() {
+        // 確保 $peopleTable 已初始化
+        if (!$peopleTable) {
+            $peopleTable = $('#tbPeopleInfo');
+        }
+
+        const mockData = [
+            {
+                id: 1,
+                name: '張三',
+                department: '資訊部',
+                position: '軟體工程師',
+                email: 'zhang.san@company.com',
+                phone: '0912-345-678',
+                joinDate: '2023-01-15',
+                status: 'active'
+            },
+            {
+                id: 2,
+                name: '李四',
+                department: '人事部',
+                position: '人事專員',
+                email: 'li.si@company.com',
+                phone: '0923-456-789',
+                joinDate: '2022-08-20',
+                status: 'active'
+            },
+            {
+                id: 3,
+                name: '王五',
+                department: '財務部',
+                position: '會計師',
+                email: 'wang.wu@company.com',
+                phone: '0934-567-890',
+                joinDate: '2021-12-10',
+                status: 'inactive'
+            }
+        ];
+
+        $peopleTable.bootstrapTable('load', mockData);
+    }
+
+
+     // Bootstrap 5 專用的表格寬度修正函數
+    function fixTableWidth() {
+        setTimeout(function() {
+            const $container = $table.closest('.bootstrap-table');
+            const $header = $container.find('.fixed-table-header');
+            const $body = $container.find('.fixed-table-body');
+
+            if ($header.length && $body.length) {
+                const containerWidth = $container.width();
+                $header.width(containerWidth);
+                $body.width(containerWidth);
+
+                // 同步表格寬度
+                const $headerTable = $header.find('table');
+                const $bodyTable = $body.find('table');
+
+                if ($headerTable.length && $bodyTable.length) {
+                    $headerTable.width(containerWidth);
+                    $bodyTable.width(containerWidth);
+                }
+            }
+        }, 50);
+    }
+
+   function initTable () {
       $table.bootstrapTable('destroy').bootstrapTable({
         method: 'get',
         url: '/UserData/GetUserData',
         height: 550,
+        exportTypes: ['json',  'txt', 'excel'],
         locale: "zh-TW",
+        theadClasses: 'table-light',
+        buttonsClass: 'outline-secondary',
+        iconsPrefix: 'fa',
+        icons: {
+            paginationSwitchDown: 'fa-caret-square-down',
+            paginationSwitchUp: 'fa-caret-square-up',
+            refresh: 'fa-sync',
+            toggle: 'fa-list-alt',
+            columns: 'fa-columns',
+            export: 'fa-download'
+        },
         columns: [
             {
               field: 'state',
               checkbox: true,
               align: 'center',
-              valign: 'middle'
+              valign: 'middle',
+              width: 50,
+              widthUnit: 'px'
             },
             {
               field: 'userId',
@@ -123,40 +340,67 @@
               align: 'center',
               valign: 'middle',
               sortable: true,
+              width: 80,
+              widthUnit: 'px'
             },
             {
               field: 'userName',
               title: '姓名',
               sortable: true,
-              align: 'center'
+              align: 'center',
+              width: 120,
+              widthUnit: 'px'
             },
             {
               field: 'userSex',
               title: '性別',
               sortable: true,
               align: 'center',
+              width: 80,
+              widthUnit: 'px'
             },
             {
               field: 'userBirthDay',
               title: '生日',
               sortable: true,
               align: 'center',
+              width: 120,
+              widthUnit: 'px'
             },
             {
               field: 'userMobilePhone',
               title: '電話',
               sortable: true,
               align: 'center',
+              width: 150,
+              widthUnit: 'px'
             },
             {
               field: 'operate',
-              title: 'Item Operate',
+              title: '操作',
               align: 'center',
               clickToSelect: false,
               events: window.operateEvents,
-              formatter: operateFormatter
+              formatter: operateFormatter,
+              width: 120,
+              widthUnit: 'px'
             }
-        ]
+        ],
+        onLoadSuccess: function(data) {
+            fixTableWidth();
+        },
+        onRefresh: function() {
+            fixTableWidth();
+        },
+        onToggle: function() {
+            fixTableWidth();
+        },
+        onColumnSwitch: function() {
+            fixTableWidth();
+        },
+        onResize: function() {
+            fixTableWidth();
+        }
       })
 
       $table.on('check.bs.table uncheck.bs.table ' +
@@ -185,21 +429,41 @@
 
     }
 
+    $(window).resize(function() {
+        if ($table.length) {
+            $table.bootstrapTable('resetView');
+        }
+    });
+
     $(function() {
       initTable()
-
-      //$('#locale').change(initTable)
     })
 
 </script>
 
 <style>
-    .select,
-    #locale {
-        width: 100%;
-    }
-
     .like {
         margin-right: 10px;
+    }
+
+    .remove{
+        margin-right: 10px;
+    }
+
+    .people {
+        margin-right: 10px;
+    }
+
+    /* Modal 自定義樣式 */
+    .modal-xl {
+        max-width: 90%;
+    }
+
+    #tbPeopleInfo {
+        font-size: 14px;
+    }
+
+    .badge {
+        font-size: 12px;
     }
 </style>

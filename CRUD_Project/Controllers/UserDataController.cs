@@ -381,6 +381,11 @@ namespace CRUD_Project.Controllers
             return View();
         }
 
+        public ActionResult CustModel()
+        {
+            return View();
+        }
+
         //public ActionResult GetEAP_Message(string LOTID)
         //{
         //    DataTable dtResult = new DataTable();
