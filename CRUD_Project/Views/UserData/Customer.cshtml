@@ -13,10 +13,10 @@
 <script src="~/lib/bootstrap-table/dist/extensions/export/bootstrap-table-export.min.js" asp-append-version="true"></script>
 
 
-<div class="container-fluid">
+<div class="row">
 
     <div id="toolbar">
-        <button id="remove"
+        <button id="btnDelete"
                 class="btn btn-danger"
                 disabled>
             <i class="fa fa-trash"></i> Delete
@@ -24,7 +24,7 @@
     </div>
 
     <!-- 客戶資訊 -->
-    <table id="tbCustmerInfo"
+    <table id="tbCustomerInfo"
            data-toolbar="#toolbar"
            data-search="true"
            data-show-refresh="false"
@@ -41,7 +41,7 @@
            data-pagination="true"
            data-id-field="id"
            data-page-list="[10, 25, 50, 100, all]"
-           data-show-footer="true"
+           data-show-footer="false"
            data-side-pagination="server"
            data-response-handler="responseHandler">
     </table>
@@ -75,7 +75,7 @@
                         data-pagination="true"
                         data-id-field="id"
                         data-page-list="[5, 10, 25, 50]"
-                        data-show-footer="true"
+                        data-show-footer="false"
                         data-side-pagination="client">
                 </table>
             </div>
@@ -87,14 +87,14 @@
 </div>
 
 <script>
-    const $table = $('#tbCustmerInfo')
-    const $remove = $('#remove')
-    let selections = []
-    let $peopleTable // 延遲初始化
+    var $table = $('#tbCustomerInfo');
+    var $remove = $('#btnDelete');
+    var selections = [];
+    var $peopleTable;
 
     function getIdSelections () {
       return $.map($table.bootstrapTable('getSelections'), function (row) {
-        return row.id
+        return row.id;
       })
     }
 
@@ -102,16 +102,16 @@
       $.each(res.rows, function (i, row) {
         row.state = $.inArray(row.id, selections) !== -1
       })
-      return res
+      return res;
     }
 
     window.detailFormatter = (index, row) => {
-      const html = []
+      const html = [];
 
       $.each(row, function (key, value) {
         html.push(`<p><b>${key}:</b> ${value}</p>`)
       })
-      return html.join('')
+      return html.join('');
     }
 
     function operateFormatter () {
@@ -133,8 +133,9 @@
         alert(`You click like action, row: ${JSON.stringify(row)}`)
       },
       'click .remove' (e, value, row) {
+     
         $table.bootstrapTable('remove', {
-          field: 'id',
+          field: 'userId',
           values: [row.id]
         })
       },
@@ -160,8 +161,8 @@
         $peopleTable.bootstrapTable('destroy').bootstrapTable({
             method: 'get',
             url: `/UserData/GetPeopleData/${userId}`, // 根據 userId 獲取人員資訊
-            height: 400,
             exportTypes: ['json', 'txt', 'excel'],
+            iconsPrefix: 'fa',
             locale: "zh-TW",
             columns: [
                 {
@@ -283,125 +284,69 @@
     }
 
 
-     // Bootstrap 5 專用的表格寬度修正函數
-    function fixTableWidth() {
-        setTimeout(function() {
-            const $container = $table.closest('.bootstrap-table');
-            const $header = $container.find('.fixed-table-header');
-            const $body = $container.find('.fixed-table-body');
+    function initTable () {
+       $table.bootstrapTable('destroy').bootstrapTable({
+         method: 'get',
+         url: '/UserData/GetUserData',
+         exportTypes: ['json',  'txt', 'excel'],
+         iconsPrefix: 'fa',
+         locale: "zh-TW",
+         columns: [
+             {
+               field: 'state',
+               checkbox: true,
+               align: 'center',
+               valign: 'middle',
+               width: 50
+             },
+             {
+               field: 'userId',
+               title: 'ID',
+               align: 'center',
+               valign: 'middle',
+               sortable: true,
+               width: 80
+             },
+             {
+               field: 'userName',
+               title: '姓名',
+               sortable: true,
+               align: 'center',
+               width: 120
+             },
+             {
+               field: 'userSex',
+               title: '性別',
+               sortable: true,
+               align: 'center',
+               width: 80
+             },
+             {
+               field: 'userBirthDay',
+               title: '生日',
+               sortable: true,
+               align: 'center',
+               width: 120
+             },
+             {
+               field: 'userMobilePhone',
+               title: '電話',
+               sortable: true,
+               align: 'center',
+               width: 150
+             },
+             {
+               field: 'operate',
+               title: 'Item Operate',
+               align: 'center',
+               clickToSelect: false,
+               events: window.operateEvents,
+               formatter: operateFormatter,
+               width: 120
+             }
+         ]
+       })
 
-            if ($header.length && $body.length) {
-                const containerWidth = $container.width();
-                $header.width(containerWidth);
-                $body.width(containerWidth);
-
-                // 同步表格寬度
-                const $headerTable = $header.find('table');
-                const $bodyTable = $body.find('table');
-
-                if ($headerTable.length && $bodyTable.length) {
-                    $headerTable.width(containerWidth);
-                    $bodyTable.width(containerWidth);
-                }
-            }
-        }, 50);
-    }
-
-   function initTable () {
-      $table.bootstrapTable('destroy').bootstrapTable({
-        method: 'get',
-        url: '/UserData/GetUserData',
-        height: 550,
-        exportTypes: ['json',  'txt', 'excel'],
-        locale: "zh-TW",
-        theadClasses: 'table-light',
-        buttonsClass: 'outline-secondary',
-        iconsPrefix: 'fa',
-        icons: {
-            paginationSwitchDown: 'fa-caret-square-down',
-            paginationSwitchUp: 'fa-caret-square-up',
-            refresh: 'fa-sync',
-            toggle: 'fa-list-alt',
-            columns: 'fa-columns',
-            export: 'fa-download'
-        },
-        columns: [
-            {
-              field: 'state',
-              checkbox: true,
-              align: 'center',
-              valign: 'middle',
-              width: 50,
-              widthUnit: 'px'
-            },
-            {
-              field: 'userId',
-              title: 'ID',
-              align: 'center',
-              valign: 'middle',
-              sortable: true,
-              width: 80,
-              widthUnit: 'px'
-            },
-            {
-              field: 'userName',
-              title: '姓名',
-              sortable: true,
-              align: 'center',
-              width: 120,
-              widthUnit: 'px'
-            },
-            {
-              field: 'userSex',
-              title: '性別',
-              sortable: true,
-              align: 'center',
-              width: 80,
-              widthUnit: 'px'
-            },
-            {
-              field: 'userBirthDay',
-              title: '生日',
-              sortable: true,
-              align: 'center',
-              width: 120,
-              widthUnit: 'px'
-            },
-            {
-              field: 'userMobilePhone',
-              title: '電話',
-              sortable: true,
-              align: 'center',
-              width: 150,
-              widthUnit: 'px'
-            },
-            {
-              field: 'operate',
-              title: '操作',
-              align: 'center',
-              clickToSelect: false,
-              events: window.operateEvents,
-              formatter: operateFormatter,
-              width: 120,
-              widthUnit: 'px'
-            }
-        ],
-        onLoadSuccess: function(data) {
-            fixTableWidth();
-        },
-        onRefresh: function() {
-            fixTableWidth();
-        },
-        onToggle: function() {
-            fixTableWidth();
-        },
-        onColumnSwitch: function() {
-            fixTableWidth();
-        },
-        onResize: function() {
-            fixTableWidth();
-        }
-      })
 
       $table.on('check.bs.table uncheck.bs.table ' +
         'check-all.bs.table uncheck-all.bs.table',
@@ -409,22 +354,23 @@
         $remove.prop('disabled', !$table.bootstrapTable('getSelections').length)
 
         // save your data, here just save the current page
-        selections = getIdSelections()
+        selections = getIdSelections();
         // push or splice the selections if you want to save all data selections
       })
 
       $table.on('all.bs.table', function (e, name, args) {
-        console.log(name, args)
+        console.log(name, args);
       })
 
       $remove.click(function () {
-        const ids = getIdSelections()
+    
+        const ids = getIdSelections();
 
         $table.bootstrapTable('remove', {
-          field: 'id',
+          field: 'userId',
           values: ids
         })
-        $remove.prop('disabled', true)
+        $remove.prop('disabled', true);
       })
 
     }
@@ -436,8 +382,9 @@
     });
 
     $(function() {
-      initTable()
+      initTable();
     })
+
 
 </script>
 
@@ -459,11 +406,4 @@
         max-width: 90%;
     }
 
-    #tbPeopleInfo {
-        font-size: 14px;
-    }
-
-    .badge {
-        font-size: 12px;
-    }
 </style>
