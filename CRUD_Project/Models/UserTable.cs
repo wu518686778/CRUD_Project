@@ -20,6 +20,7 @@ public partial class UserTable
     public string? UserSex { get; set; }
 
     [Display(Name = "生日")]
+    [DataType(DataType.Date)]
     public DateTime? UserBirthDay { get; set; }
 
     [Display(Name = "手機")]
