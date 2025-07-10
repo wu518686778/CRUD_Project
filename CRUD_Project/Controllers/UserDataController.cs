@@ -365,14 +365,26 @@ namespace CRUD_Project.Controllers
         [HttpGet]
         public IActionResult GetUserData(int offset, int limit)
         {
-            var data = _db.UserTables
-                 .Skip(offset)
-                 .Take(limit)
-                 .ToList();
+            IQueryable<UserTable> query = _db.UserTables.AsQueryable();
+            var total = query.Count();
+            List<UserTable> listUserData;
+            // 處理顯示所有資料的情況
+            if (limit <= 0 || limit >= total)
+            {
+                listUserData = query.Skip(offset).ToList();
+            }
+            else
+            {
+                // 正常分頁
+                listUserData = query.Skip(offset).Take(limit).ToList();
+            }
 
-            var total = _db.UserTables.Count();
+            return Json(new
+            {
+                total = total,
+                rows = listUserData
+            });
 
-            return Json(new { total = total, rows = data });
         }
 
 
