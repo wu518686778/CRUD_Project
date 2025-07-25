@@ -1,6 +1,7 @@
 using CRUD_Project.Models;
-using Microsoft.EntityFrameworkCore;
+using CRUD_Project.Models_FileUpload;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;     // 手動安裝NuGet -- ConfigurationBuilder會用到這個命名空間
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,10 @@ builder.Services.AddDbContext<MvcUserDbContext>(
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
+
+// 註冊第二個 DbContext (新增的檔案上傳相關)
+builder.Services.AddDbContext<FileUploadDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("FileUploadConnection")));
 
 var app = builder.Build();
 

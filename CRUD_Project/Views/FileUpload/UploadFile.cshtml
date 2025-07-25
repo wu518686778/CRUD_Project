@@ -1,0 +1,77 @@
+﻿@model CRUD_Project.Models_FileUpload.FileUploadDb
+
+@{
+    ViewData["Title"] = "UploadFile";
+    Layout = "~/Views/Shared/_Layout4.cshtml";
+}
+
+<div class="row">
+    <form asp-action="UploadFile" asp-controller="FileUpload" method="post" enctype="multipart/form-data">
+        <div class="form-horizontal">
+            <h4>FileUpload_DB</h4>
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group row mb-3">
+                <label asp-for="FileUploadTime" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="FileUploadTime" class="form-control" />
+                    <span asp-validation-for="FileUploadTime" class="text-danger"></span>
+                    <br /><br />
+                </div>
+            </div>
+
+            <div class="form-group row mb-3">
+                <label asp-for="TestId" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="TestId" class="form-control" type="number" />
+                    <span asp-validation-for="TestId" class="text-danger"></span>
+                    <br /><br />
+                </div>
+            </div>
+
+            <div class="form-group row mb-3">
+                <label asp-for="FileUploadFileName" class="control-label col-md-2">選擇檔案</label>
+                <div class="col-md-10">
+                    <br /><br />
+                    <!-- ******************************************************************** -->
+                    <i>因為 FileUpload_DB只存放「上傳檔名（字串）」，所以這裡需要手動改成 "檔案上傳"的表單元件 type="file"</i><br />
+                    <input type="file" asp-for="FileUploadFileName" class="form-control" />
+                    <!--                                                                   ********** 重點！！ ***********  -->
+                    <!-- ******************************************************************** -->
+                    <span asp-validation-for="FileUploadFileName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group row mb-3">
+                <label asp-for="FileUploadMemo" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <textarea asp-for="FileUploadMemo" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="FileUploadMemo" class="text-danger"></span>
+                    <br /><br />
+                </div>
+            </div>
+
+            <div class="form-group row mb-3">
+                <label asp-for="FileUploadUser" class="control-label col-md-2"></label>
+                <div class="col-md-10">
+                    <input asp-for="FileUploadUser" class="form-control" />
+                    <span asp-validation-for="FileUploadUser" class="text-danger"></span>
+                    <br /><br />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-md-offset-2 col-md-10 offset-md-2">
+                    <br /><br />
+                    <br /><br />
+                    <input type="submit" value="Create（新增與檔案上傳，搭配 FileUpload_DB資料表）" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
