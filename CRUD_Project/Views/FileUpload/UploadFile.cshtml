@@ -1,77 +1,392 @@
-﻿@model CRUD_Project.Models_FileUpload.FileUploadDb
-
+﻿
 @{
     ViewData["Title"] = "UploadFile";
     Layout = "~/Views/Shared/_Layout4.cshtml";
 }
 
-<div class="row">
-    <form asp-action="UploadFile" asp-controller="FileUpload" method="post" enctype="multipart/form-data">
-        <div class="form-horizontal">
-            <h4>FileUpload_DB</h4>
-            <hr />
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container mt-4">
 
-            <div class="form-group row mb-3">
-                <label asp-for="FileUploadTime" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="FileUploadTime" class="form-control" />
-                    <span asp-validation-for="FileUploadTime" class="text-danger"></span>
-                    <br /><br />
+    <!-- 檔案選擇區域 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-upload me-2"></i>檔案上傳
+                    </h5>
                 </div>
-            </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="fileInput" class="form-label">選擇檔案 (支援多檔上傳)</label>
+                        <input class="form-control" type="file" id="fileInput" multiple accept=".pdf">
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            支援格式: PDF | 最大檔案大小: 10MB
+                        </div>
+                    </div>
 
-            <div class="form-group row mb-3">
-                <label asp-for="TestId" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="TestId" class="form-control" type="number" />
-                    <span asp-validation-for="TestId" class="text-danger"></span>
-                    <br /><br />
-                </div>
-            </div>
+                    <!-- 選中的檔案列表 -->
+                    <div id="selectedFiles" class="mb-3" style="display: none;">
+                        <h6>已選擇的檔案:</h6>
+                        <div id="selectedFilesList"></div>
+                    </div>
 
-            <div class="form-group row mb-3">
-                <label asp-for="FileUploadFileName" class="control-label col-md-2">選擇檔案</label>
-                <div class="col-md-10">
-                    <br /><br />
-                    <!-- ******************************************************************** -->
-                    <i>因為 FileUpload_DB只存放「上傳檔名（字串）」，所以這裡需要手動改成 "檔案上傳"的表單元件 type="file"</i><br />
-                    <input type="file" asp-for="FileUploadFileName" class="form-control" />
-                    <!--                                                                   ********** 重點！！ ***********  -->
-                    <!-- ******************************************************************** -->
-                    <span asp-validation-for="FileUploadFileName" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label asp-for="FileUploadMemo" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <textarea asp-for="FileUploadMemo" class="form-control" rows="3"></textarea>
-                    <span asp-validation-for="FileUploadMemo" class="text-danger"></span>
-                    <br /><br />
-                </div>
-            </div>
-
-            <div class="form-group row mb-3">
-                <label asp-for="FileUploadUser" class="control-label col-md-2"></label>
-                <div class="col-md-10">
-                    <input asp-for="FileUploadUser" class="form-control" />
-                    <span asp-validation-for="FileUploadUser" class="text-danger"></span>
-                    <br /><br />
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-md-offset-2 col-md-10 offset-md-2">
-                    <br /><br />
-                    <br /><br />
-                    <input type="submit" value="Create（新增與檔案上傳，搭配 FileUpload_DB資料表）" class="btn btn-primary" />
+                    <button type="button" class="btn btn-primary" id="uploadBtn" disabled>
+                        <i class="bi bi-cloud-upload"></i> 開始上傳
+                    </button>
+                    <button type="button" class="btn btn-secondary ms-2" id="clearBtn">
+                        <i class="bi bi-x-circle"></i> 清除選擇
+                    </button>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
+
+    <!-- 上傳進度區域 -->
+    <div class="row mb-4" id="progressSection" style="display: none;">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">上傳進度</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated"
+                             id="progressBar"
+                             role="progressbar"
+                             style="width: 0%">
+                            0%
+                        </div>
+                    </div>
+                    <div id="uploadStatus"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 已上傳檔案列表 -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>已上傳檔案
+                        <button type="button" class="btn btn-sm btn-outline-light float-end" style="font-size: 0.75rem; line-height: 1;" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i> 重新整理
+                        </button>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="uploadedFiles">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">載入中...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 檔案預覽Modal -->
+<div class="modal fade" id="filePreviewModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalTitle">檔案預覽</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="previewContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+                <a href="#" class="btn btn-primary" id="downloadBtn" download>下載檔案</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            const fileInput = $('#fileInput');
+            const uploadBtn = $('#uploadBtn');
+            const clearBtn = $('#clearBtn');
+            const refreshBtn = $('#refreshBtn');
+            const selectedFiles = $('#selectedFiles');
+            const selectedFilesList = $('#selectedFilesList');
+            const progressSection = $('#progressSection');
+            const progressBar = $('#progressBar');
+            const uploadStatus = $('#uploadStatus');
+            const uploadedFiles = $('#uploadedFiles');
+            const filePreviewModal = new bootstrap.Modal(document.getElementById('filePreviewModal'));
+
+            let selectedFilesArray = [];
+
+            // 檔案選擇事件
+            fileInput.on('change', function() {
+                const files = Array.from(this.files);
+                selectedFilesArray = files;
+                updateSelectedFilesList();
+                uploadBtn.prop('disabled', files.length === 0);
+            });
+
+            // 更新選中檔案列表
+            function updateSelectedFilesList() {
+                if (selectedFilesArray.length === 0) {
+                    selectedFiles.hide();
+                    return;
+                }
+
+                selectedFiles.show();
+                let html = '';
+                selectedFilesArray.forEach((file, index) => {
+                    const size = formatFileSize(file.size);
+                    const isValid = validateFile(file);
+                    const statusClass = isValid.valid ? 'text-success' : 'text-danger';
+                    const statusIcon = isValid.valid ? 'bi-check-circle' : 'bi-x-circle';
+
+                    html += `
+                        <div class="d-flex justify-content-between align-items-center border rounded p-2 mb-2">
+                            <div>
+                                <i class="bi bi-file-earmark"></i>
+                                <span>${file.name}</span>
+                                <small class="text-muted">(${size})</small>
+                            </div>
+                            <div class="${statusClass}">
+                                <i class="bi ${statusIcon}"></i>
+                                ${isValid.message}
+                            </div>
+                        </div>
+                    `;
+                });
+                selectedFilesList.html(html);
+            }
+
+            // 檔案驗證
+            function validateFile(file) {
+                const allowedTypes = ['application/pdf'];
+                const maxSize = 10 * 1024 * 1024; // 10MB
+
+                if (!allowedTypes.includes(file.type)) {
+                    return { valid: false, message: '不支援的檔案格式' };
+                }
+                if (file.size > maxSize) {
+                    return { valid: false, message: '檔案過大 (>10MB)' };
+                }
+                return { valid: true, message: '檔案有效' };
+            }
+
+            // 檔案大小格式化
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            // 清除選擇
+            clearBtn.on('click', function() {
+                fileInput.val('');
+                selectedFilesArray = [];
+                updateSelectedFilesList();
+                uploadBtn.prop('disabled', true);
+                progressSection.hide();
+                progressBar.css('width', '0%').text('0%');
+                uploadStatus.empty();
+            });
+
+            // 檔案上傳
+            uploadBtn.on('click', function() {
+                if (selectedFilesArray.length === 0) return;
+
+                // 驗證所有檔案
+                const invalidFiles = selectedFilesArray.filter(file => !validateFile(file).valid);
+                if (invalidFiles.length > 0) {
+                    alert('請移除無效的檔案後再上傳');
+                    return;
+                }
+
+                const formData = new FormData();
+                selectedFilesArray.forEach(file => {
+                    formData.append('files', file);
+                });
+
+                progressSection.show();
+                progressBar.css('width', '0%').text('0%');
+                uploadStatus.html('<div class="text-info">正在上傳...</div>');
+                uploadBtn.prop('disabled', true);
+
+                $.ajax({
+                    url: '/FileUpload/Upload/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    xhr: function() {
+                        const xhr = new window.XMLHttpRequest();
+                        xhr.upload.addEventListener("progress", function(evt) {
+                            if (evt.lengthComputable) {
+                                const percentComplete = Math.round((evt.loaded / evt.total) * 100);
+                                progressBar.css('width', percentComplete + '%').text(percentComplete + '%');
+                            }
+                        }, false);
+                        return xhr;
+                    },
+                    success: function(response) {
+                        progressBar.css('width', '100%').text('100%');
+
+                        if (response.success) {
+                            let statusHtml = '';
+                            response.files.forEach(file => {
+                                const statusClass = file.success ? 'text-success' : 'text-danger';
+                                const statusIcon = file.success ? 'bi-check-circle' : 'bi-x-circle';
+                                statusHtml += `
+                                    <div class="${statusClass}">
+                                        <i class="bi ${statusIcon}"></i>
+                                        ${file.fileName}: ${file.message}
+                                    </div>
+                                `;
+                            });
+                            uploadStatus.html(statusHtml);
+
+                            // 清除選擇並重新載入檔案列表
+                            setTimeout(() => {
+                                clearBtn.click();
+                                loadUploadedFiles();
+                            }, 2000);
+                        } else {
+                            uploadStatus.html(`<div class="text-danger"><i class="bi bi-x-circle"></i> ${response.message}</div>`);
+                        }
+                    },
+                    error: function() {
+                        uploadStatus.html('<div class="text-danger"><i class="bi bi-x-circle"></i> 上傳失敗，請稍後再試</div>');
+                    },
+                    complete: function() {
+                        uploadBtn.prop('disabled', false);
+                    }
+                });
+            });
+
+            // 載入已上傳檔案
+            function loadUploadedFiles() {
+                uploadedFiles.html(`
+                    <div class="text-center">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">載入中...</span>
+                        </div>
+                    </div>
+                `);
+
+                $.get('@Url.Action("GetUploadedFiles", "FileUpload")')
+                    .done(function(files) {
+                        if (files.length === 0) {
+                            uploadedFiles.html('<div class="text-muted text-center">尚無上傳檔案</div>');
+                            return;
+                        }
+
+                        let html = '<div class="row">';
+                        files.forEach(file => {
+                            const fileIcon = file.fileType === '.pdf' ? 'bi-file-earmark-pdf' : 'bi-file-earmark-image';
+                            const fileSize = formatFileSize(file.fileSize);
+
+                            html += `
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <i class="bi ${fileIcon} fs-4 me-2"></i>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="card-title mb-1 text-truncate" title="${file.originalName}">
+                                                        ${file.originalName}
+                                                    </h6>
+                                                    <small class="text-muted">${fileSize}</small>
+                                                </div>
+                                            </div>
+                                            <p class="card-text">
+                                                <small class="text-muted">上傳時間: ${file.uploadDate}</small>
+                                            </p>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-primary btn-sm flex-fill preview-btn"
+                                                        data-filename="${file.fileName}"
+                                                        data-original-name="${file.originalName}"
+                                                        data-file-type="${file.fileType}">
+                                                    <i class="bi bi-eye"></i> 預覽
+                                                </button>
+                                                <button class="btn btn-danger btn-sm delete-btn"
+                                                        data-filename="${file.fileName}">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        uploadedFiles.html(html);
+                    })
+                    .fail(function() {
+                        uploadedFiles.html('<div class="text-danger text-center">載入失敗，請稍後再試</div>');
+                    });
+            }
+
+            // 預覽檔案
+            $(document).on('click', '.preview-btn', function() {
+                const fileName = $(this).data('filename');
+                const originalName = $(this).data('original-name');
+                const fileType = $(this).data('file-type');
+
+                $('#previewModalTitle').text(originalName);
+                $('#downloadBtn').attr('href', `@Url.Action("ViewFile", "FileUpload")?fileName=${encodeURIComponent(fileName)}`);
+
+                const previewUrl = `@Url.Action("ViewFile", "FileUpload")?fileName=${encodeURIComponent(fileName)}`;
+
+                if (fileType === '.pdf') {
+                    $('#previewContent').html(`
+                        <embed src="${previewUrl}" type="application/pdf" width="100%" height="600px" />
+                    `);
+                } else {
+                    $('#previewContent').html(`
+                        <img src="${previewUrl}" class="img-fluid" alt="${originalName}" />
+                    `);
+                }
+
+                filePreviewModal.show();
+            });
+
+            // 刪除檔案
+            $(document).on('click', '.delete-btn', function() {
+                const fileName = $(this).data('filename');
+
+                if (confirm('確定要刪除這個檔案嗎？')) {
+                    $.ajax({
+                        url: '/FileUpload/DeleteFile/',
+                        type: 'DELETE',
+                        data: { fileName: fileName },
+                        success: function(response) {
+                            if (response.success) {
+                                loadUploadedFiles();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function() {
+                            alert('刪除失敗，請稍後再試');
+                        }
+                    });
+                }
+            });
+
+            // 重新整理按鈕
+            refreshBtn.on('click', loadUploadedFiles);
+
+            // 初始載入
+            loadUploadedFiles();
+        });
+    </script>
 }
