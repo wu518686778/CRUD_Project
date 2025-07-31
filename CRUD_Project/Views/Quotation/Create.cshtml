@@ -1,0 +1,342 @@
+﻿@model CRUD_Project.Models.QuotationViewModel
+
+@{
+    ViewData["Title"] = "建立報價單";
+    Layout = "~/Views/Shared/_Layout4.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-file-invoice"></i> 建立報價單</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="quotationForm">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <h6>請修正以下錯誤：</h6>
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                            </div>
+                        }
+
+                        <!-- 基本資訊 -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="QuotationNumber" class="form-label fw-bold">報價單號 <span class="text-danger">*</span></label>
+                                    <input asp-for="QuotationNumber" class="form-control" readonly />
+                                    <span asp-validation-for="QuotationNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="QuotationDate" class="form-label fw-bold">報價日期 <span class="text-danger">*</span></label>
+                                    <input asp-for="QuotationDate" class="form-control" type="date" />
+                                    <span asp-validation-for="QuotationDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 客戶資訊 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">客戶資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="CompanyName" class="form-label fw-bold">公司名稱 <span class="text-danger">*</span></label>
+                                            <input asp-for="CompanyName" class="form-control" placeholder="請輸入公司名稱" />
+                                            <span asp-validation-for="CompanyName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="ContactPerson" class="form-label fw-bold">聯絡人 <span class="text-danger">*</span></label>
+                                            <input asp-for="ContactPerson" class="form-control" placeholder="請輸入聯絡人姓名" />
+                                            <span asp-validation-for="ContactPerson" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Phone" class="form-label fw-bold">電話 <span class="text-danger">*</span></label>
+                                            <input asp-for="Phone" class="form-control" placeholder="請輸入聯絡電話" />
+                                            <span asp-validation-for="Phone" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="ProjectName" class="form-label fw-bold">專案名稱 <span class="text-danger">*</span></label>
+                                            <input asp-for="ProjectName" class="form-control" placeholder="請輸入專案名稱" />
+                                            <span asp-validation-for="ProjectName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="WorkLocation" class="form-label fw-bold">工作地點</label>
+                                            <input asp-for="WorkLocation" class="form-control" placeholder="請輸入工作地點" />
+                                            <span asp-validation-for="WorkLocation" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 報價品項 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">報價品項</h5>
+                                <button type="button" class="btn btn-success btn-sm" onclick="addItem()">
+                                    <i class="fas fa-plus"></i> 新增品項
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="itemsTable">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th width="5%">項次</th>
+                                                <th width="25%">品名規格 <span class="text-danger">*</span></th>
+                                                <th width="10%">單位 <span class="text-danger">*</span></th>
+                                                <th width="15%">單價 <span class="text-danger">*</span></th>
+                                                <th width="10%">數量 <span class="text-danger">*</span></th>
+                                                <th width="15%">小計</th>
+                                                <th width="15%">品項備註</th>
+                                                <th width="5%">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemsTableBody">
+                                            @for (int i = 0; i < Model.Items.Count; i++)
+                                            {
+                                                <tr data-index="@i">
+                                                    <td class="text-center align-middle">@(i + 1)</td>
+                                                    <td>
+                                                        <input asp-for="Items[i].ItemName" class="form-control form-control-sm" placeholder="請輸入品名規格" />
+                                                        <span asp-validation-for="Items[i].ItemName" class="text-danger small"></span>
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="Items[i].Unit" class="form-control form-control-sm" placeholder="單位" />
+                                                        <span asp-validation-for="Items[i].Unit" class="text-danger small"></span>
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="Items[i].UnitPrice" class="form-control form-control-sm unit-price" type="number" min="0" step="0.01" placeholder="0" />
+                                                        <span asp-validation-for="Items[i].UnitPrice" class="text-danger small"></span>
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="Items[i].Quantity" class="form-control form-control-sm quantity" type="number" min="0" placeholder="0" />
+                                                        <span asp-validation-for="Items[i].Quantity" class="text-danger small"></span>
+                                                    </td>
+                                                    <td class="text-end align-middle">
+                                                        <span class="subtotal fw-bold">0</span>
+                                                    </td>
+                                                    <td>
+                                                        <input asp-for="Items[i].ItemNotes" class="form-control form-control-sm" placeholder="品項備註" />
+                                                    </td>
+                                                    <td class="text-center align-middle">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)" title="刪除">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="table-info">
+                                                <td colspan="5" class="text-end fw-bold">合計：</td>
+                                                <td class="text-end fw-bold fs-5" id="totalAmount">0</td>
+                                                <td colspan="2"></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 業務資訊 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">業務資訊</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="SalesManager" class="form-label fw-bold">業務負責人</label>
+                                            <input asp-for="SalesManager" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="SalesPhone" class="form-label fw-bold">業務聯絡電話</label>
+                                            <input asp-for="SalesPhone" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="SalesEmail" class="form-label fw-bold">業務信箱</label>
+                                            <input asp-for="SalesEmail" class="form-control" type="email" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 備註 -->
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">備註</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <textarea asp-for="Notes" class="form-control" rows="6" placeholder="請輸入備註內容"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 操作按鈕 -->
+                        <div class="text-end">
+                            <button type="button" class="btn btn-secondary me-2" onclick="window.history.back()">
+                                <i class="fas fa-arrow-left"></i> 返回
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> 預覽報價單
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // 初始化計算
+        calculateAll();
+
+        // 綁定輸入事件
+        $(document).on('input', '.unit-price, .quantity', function() {
+            calculateSubtotal($(this).closest('tr'));
+            calculateTotal();
+        });
+    });
+
+    function addItem() {
+        var tbody = $('#itemsTableBody');
+        var rowCount = tbody.find('tr').length;
+
+        var newRow = `
+            <tr data-index="${rowCount}">
+                <td class="text-center align-middle">${rowCount + 1}</td>
+                <td>
+                    <input name="Items[${rowCount}].ItemName" class="form-control form-control-sm" placeholder="請輸入品名規格" />
+                    <span class="text-danger small"></span>
+                </td>
+                <td>
+                    <input name="Items[${rowCount}].Unit" class="form-control form-control-sm" placeholder="單位" />
+                    <span class="text-danger small"></span>
+                </td>
+                <td>
+                    <input name="Items[${rowCount}].UnitPrice" class="form-control form-control-sm unit-price" type="number" min="0" step="0.01" placeholder="0" />
+                    <span class="text-danger small"></span>
+                </td>
+                <td>
+                    <input name="Items[${rowCount}].Quantity" class="form-control form-control-sm quantity" type="number" min="0" placeholder="0" />
+                    <span class="text-danger small"></span>
+                </td>
+                <td class="text-end align-middle">
+                    <span class="subtotal fw-bold">0</span>
+                </td>
+                <td>
+                    <input name="Items[${rowCount}].ItemNotes" class="form-control form-control-sm" placeholder="品項備註" />
+                </td>
+                <td class="text-center align-middle">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeItem(this)" title="刪除">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        tbody.append(newRow);
+        updateRowNumbers();
+    }
+
+    function removeItem(button) {
+        var tbody = $('#itemsTableBody');
+        if (tbody.find('tr').length > 1) {
+            $(button).closest('tr').remove();
+            updateRowNumbers();
+            calculateTotal();
+        } else {
+            alert('至少需要保留一個品項');
+        }
+    }
+
+    function updateRowNumbers() {
+        $('#itemsTableBody tr').each(function(index) {
+            $(this).find('td:first').text(index + 1);
+            $(this).attr('data-index', index);
+
+            // 更新input的name屬性
+            $(this).find('input').each(function() {
+                var name = $(this).attr('name');
+                if (name && name.includes('Items[')) {
+                    var newName = name.replace(/Items\[\d+\]/, 'Items[' + index + ']');
+                    $(this).attr('name', newName);
+                }
+            });
+        });
+    }
+
+    function calculateSubtotal(row) {
+        var unitPrice = parseFloat(row.find('.unit-price').val()) || 0;
+        var quantity = parseInt(row.find('.quantity').val()) || 0;
+        var subtotal = unitPrice * quantity;
+
+        row.find('.subtotal').text(subtotal.toLocaleString());
+    }
+
+    function calculateTotal() {
+        var total = 0;
+        $('.subtotal').each(function() {
+            var value = parseFloat($(this).text().replace(/,/g, '')) || 0;
+            total += value;
+        });
+
+        $('#totalAmount').text(total.toLocaleString());
+    }
+
+    function calculateAll() {
+        $('#itemsTableBody tr').each(function() {
+            calculateSubtotal($(this));
+        });
+        calculateTotal();
+    }
+
+    // 表單驗證
+    $('#quotationForm').on('submit', function(e) {
+        var hasItems = false;
+        $('#itemsTableBody tr').each(function() {
+            var itemName = $(this).find('input[name*="ItemName"]').val();
+            if (itemName && itemName.trim()) {
+                hasItems = true;
+                return false;
+            }
+        });
+
+        if (!hasItems) {
+            e.preventDefault();
+            alert('請至少填寫一個品項');
+            return false;
+        }
+    });
+</script>

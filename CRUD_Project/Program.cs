@@ -1,5 +1,6 @@
 using CRUD_Project.Models;
 using CRUD_Project.Models_FileUpload;
+using CRUD_Project.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;     // 手動安裝NuGet -- ConfigurationBuilder會用到這個命名空間
@@ -10,6 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// 註冊 PDF 服務
+builder.Services.AddScoped<IPdfService, PdfService>();
+
+// 配置Session (用於TempData)
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // 設定檔案上傳大小限制
 builder.Services.Configure<IISServerOptions>(options =>

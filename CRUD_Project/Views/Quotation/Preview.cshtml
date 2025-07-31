@@ -1,0 +1,212 @@
+﻿@model CRUD_Project.Models.QuotationViewModel
+
+@{
+    ViewData["Title"] = "預覽報價單";
+    Layout = "~/Views/Shared/_Layout4.cshtml";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <div class="card">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-eye"></i> 預覽報價單</h4>
+                    <div>
+                        <form asp-action="BackToEdit" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-warning btn-sm me-2">
+                                <i class="fas fa-edit"></i> 修改
+                            </button>
+                        </form>
+                        <form asp-action="GeneratePdf" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-download"></i> 下載PDF
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- PDF預覽區域 -->
+                    <div class="pdf-preview" style="background: white; padding: 40px; border: 1px solid #ddd; min-height: 800px;">
+
+                        <!-- 標題區域 -->
+                        <div class="row mb-4">
+                            <div class="col-2 text-center">
+                                <img src="~/images/Logo.jpg" alt="Logo" style="max-width: 80px; max-height: 80px;"
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+                                <div style="display: none; width: 80px; height: 80px; border: 1px solid #ccc;
+                                           display: flex; align-items: center; justify-content: center; font-size: 12px;">
+                                    LOGO
+                                </div>
+                            </div>
+                            <div class="col-10">
+                                <h2 class="mb-0" style="font-family: 'Microsoft JhengHei', sans-serif; font-size: 24px;">
+                                    亦思科技(股)公司　報價單
+                                </h2>
+                            </div>
+                        </div>
+
+                        <!-- 客戶資訊 -->
+                        <div class="row mb-4" style="font-size: 14px;">
+                            <div class="col-3"><strong>公司名稱：</strong></div>
+                            <div class="col-3">@Model.CompanyName</div>
+                            <div class="col-3"><strong>報價單號：</strong></div>
+                            <div class="col-3">@Model.QuotationNumber</div>
+                        </div>
+                        <div class="row mb-2" style="font-size: 14px;">
+                            <div class="col-3"><strong>聯絡人：</strong></div>
+                            <div class="col-3">@Model.ContactPerson</div>
+                            <div class="col-3"><strong>報價日期：</strong></div>
+                            <div class="col-3">@Model.QuotationDate.ToString("yyyy/MM/dd")</div>
+                        </div>
+                        <div class="row mb-4" style="font-size: 14px;">
+                            <div class="col-3"><strong>電話：</strong></div>
+                            <div class="col-3">@Model.Phone</div>
+                            <div class="col-3"><strong>專案名稱：</strong></div>
+                            <div class="col-3">@Model.ProjectName</div>
+                        </div>
+
+                        <!-- 品項表格 -->
+                        <div class="table-responsive mb-4">
+                            <table class="table table-bordered" style="font-size: 12px;">
+                                <thead class="table-light">
+                                    <tr style="background-color: #f8f9fa;">
+                                        <th class="text-center" width="8%">項次</th>
+                                        <th class="text-center" width="25%">品名規格</th>
+                                        <th class="text-center" width="10%">單位</th>
+                                        <th class="text-center" width="15%">單價</th>
+                                        <th class="text-center" width="10%">數量</th>
+                                        <th class="text-center" width="15%">小計</th>
+                                        <th class="text-center" width="17%">備註</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.Items.Count; i++)
+                                    {
+                                        <tr>
+                                            <td class="text-center">@(i + 1)</td>
+                                            <td>@Model.Items[i].ItemName</td>
+                                            <td class="text-center">@Model.Items[i].Unit</td>
+                                            <td class="text-end">@Model.Items[i].UnitPrice.ToString("N0")</td>
+                                            <td class="text-center">@Model.Items[i].Quantity</td>
+                                            <td class="text-end">@Model.Items[i].Subtotal.ToString("N0")</td>
+                                            <td>@Model.Items[i].ItemNotes</td>
+                                        </tr>
+                                    }
+                                    <tr style="background-color: #f8f9fa;">
+                                        <td colspan="5" class="text-center"><strong>合計</strong></td>
+                                        <td class="text-end"><strong>@Model.TotalAmount.ToString("N0") (未稅)</strong></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 備註 -->
+                        @if (!string.IsNullOrEmpty(Model.Notes))
+                        {
+                            <div class="mb-4" style="font-size: 12px;">
+                                <strong>備註：</strong><br />
+                                @foreach (var line in Model.Notes.Split('\n'))
+                                {
+                                    if (!string.IsNullOrWhiteSpace(line))
+                                    {
+                                        <div style="margin-left: 20px; margin-bottom: 2px;">@line.Trim()</div>
+                                    }
+                                }
+                            </div>
+                        }
+
+                        <!-- 簽名區域 -->
+                        <div class="row mt-5" style="font-size: 12px;">
+                            <div class="col-6">
+                                <div style="border-bottom: 1px solid #333; width: 200px; height: 40px; margin-bottom: 5px;"></div>
+                                <strong>客戶確認：</strong>
+                            </div>
+                            <div class="col-6 text-end">
+                                <strong>業務負責：(@Model.SalesPhone)　Mail：@Model.SalesEmail</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .pdf-preview {
+        font-family: 'Microsoft JhengHei', 'SimSun', serif;
+        color: #000;
+        line-height: 1.4;
+    }
+
+        .pdf-preview table {
+            border: 1px solid #000 !important;
+        }
+
+        .pdf-preview th,
+        .pdf-preview td {
+            border: 1px solid #000 !important;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        .pdf-preview th {
+            background-color: #f0f0f0 !important;
+            font-weight: bold;
+        }
+
+    @@media print {
+        .card-header,
+        .btn {
+            display: none !important;
+        }
+
+        .pdf-preview {
+            margin: 0;
+            padding: 20px;
+            box-shadow: none;
+            border: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container-fluid {
+            padding: 0;
+            margin: 0;
+            max-width: none;
+        }
+    }
+</style>
+
+<script>
+    // 列印功能
+    function printPreview() {
+        window.print();
+    }
+
+    // 鍵盤快捷鍵
+    $(document).keydown(function(e) {
+        // Ctrl+P 列印
+        if (e.ctrlKey && e.which === 80) {
+            e.preventDefault();
+            printPreview();
+        }
+
+        // ESC 返回編輯
+        if (e.which === 27) {
+            $('form[action*="BackToEdit"]').submit();
+        }
+    });
+</script>
