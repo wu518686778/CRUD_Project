@@ -29,9 +29,6 @@ namespace CRUD_Project.Models
         [Display(Name = "專案名稱")]
         public string ProjectName { get; set; } = string.Empty;
 
-        [Display(Name = "工作地點")]
-        public string WorkLocation { get; set; } = string.Empty;
-
         [Display(Name = "備註")]
         public string Notes { get; set; } = "一、報價單有效期限 20日。\n二、付款方式：依華邦議價紀錄。\n三、報價單簽名回傳即視同貴公司正式訂單。\n四、工作地點：中科";
 
