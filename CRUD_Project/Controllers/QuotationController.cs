@@ -96,7 +96,7 @@ namespace CRUD_Project.Controllers
             try
             {
                 var pdfBytes = _pdfService.GenerateQuotationPdf(model);
-                var fileName = $"報價單_{model.QuotationNumber}_{DateTime.Now:yyyyMMdd}.pdf";
+                var fileName = $"報價單_{model.QuotationNumber}_{DateTime.Now:yyyyMMddHHmmssfff}.pdf";
 
                 return File(pdfBytes, "application/pdf", fileName);
             }

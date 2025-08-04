@@ -15,22 +15,22 @@ namespace CRUD_Project.Models
 
         [Required(ErrorMessage = "公司名稱為必填")]
         [Display(Name = "公司名稱")]
-        public string CompanyName { get; set; } = string.Empty;
+        public string CompanyName { get; set; } = "台積電";
 
         [Required(ErrorMessage = "聯絡人為必填")]
         [Display(Name = "聯絡人")]
-        public string ContactPerson { get; set; } = string.Empty;
+        public string ContactPerson { get; set; } = "吳小明";
 
         [Required(ErrorMessage = "電話為必填")]
         [Display(Name = "電話")]
-        public string Phone { get; set; } = string.Empty;
+        public string Phone { get; set; } = "03-5782258#36680";
 
         [Required(ErrorMessage = "專案名稱為必填")]
         [Display(Name = "專案名稱")]
-        public string ProjectName { get; set; } = string.Empty;
+        public string ProjectName { get; set; } = "MVC網站開發";
 
         [Display(Name = "備註")]
-        public string Notes { get; set; } = "一、報價單有效期限 20日。\n二、付款方式：依華邦議價紀錄。\n三、報價單簽名回傳即視同貴公司正式訂單。\n四、工作地點：中科";
+        public string Notes { get; set; } = "一、報價單有效期限 20日。\n二、付款方式：訂單成立後100%支付，並於30天內匯入亦思指定帳戶。\n三、報價單簽名回傳即視同貴公司正式訂單。\n四、非新竹地區之交通或住宿費用另計。";
 
         [Display(Name = "業務負責人")]
         public string SalesManager { get; set; } = "侯佳伶";
