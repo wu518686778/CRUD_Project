@@ -30,7 +30,7 @@ namespace CRUD_Project.Services
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf, iText.Kernel.Geom.PageSize.A4.Rotate());
 
-            // 設定字型為標楷體（使用微軟正黑體作為替代，因為標楷體可能不可用）
+            // 設定字型
             PdfFont font;
             try
             {
@@ -46,8 +46,9 @@ namespace CRUD_Project.Services
                 }
                 catch
                 {
-                    // 最後備選使用內建字型
-                    font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+                    //使用字型檔
+                    var FontPath = Path.Combine(_environment.WebRootPath, "fonts", "KAIU.TTF");
+                    font = PdfFontFactory.CreateFont(FontPath, PdfEncodings.IDENTITY_H);
                 }
             }
 

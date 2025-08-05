@@ -96,7 +96,7 @@ namespace CRUD_Project.Controllers
             try
             {
                 var pdfBytes = _pdfService.GenerateQuotationPdf(model);
-                var fileName = $"報價單_{model.QuotationNumber}_{DateTime.Now:yyyyMMddHHmmssfff}.pdf";
+                var fileName = $"報價單_{model.QuotationNumber}.pdf";
 
                 return File(pdfBytes, "application/pdf", fileName);
             }
@@ -127,7 +127,7 @@ namespace CRUD_Project.Controllers
 
         private string GenerateQuotationNumber()
         {
-            return $"is-quo-{DateTime.Now:yyyyMMdd}-01";
+            return $"is-quo-{DateTime.Now:yyyyMMddHHmmssfff}";
         }
     }
 }

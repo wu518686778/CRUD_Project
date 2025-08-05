@@ -33,58 +33,57 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- PDF預覽區域 -->
-                    <div class="pdf-preview" style="background: white; padding: 40px; border: 1px solid #ddd; min-height: 800px;">
+                    <!-- PDF預覽區域 - 橫向A4 -->
+                    <div class="pdf-preview landscape-a4">
 
                         <!-- 標題區域 -->
-                        <div class="row mb-4">
-                            <div class="col-2 text-center">
-                                <img src="~/images/Logo.jpg" alt="Logo" style="max-width: 80px; max-height: 80px;"
+                        <div class="header-section">
+                            <div class="logo-container">
+                                <img src="~/images/Logo.jpg" alt="Logo" style="width: 78px; height: 36px; object-fit: contain;"
                                      onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
-                                <div style="display: none; width: 80px; height: 80px; border: 1px solid #ccc;
-                                           display: flex; align-items: center; justify-content: center; font-size: 12px;">
-                                    LOGO
-                                </div>
+                                <div style="display: none; font-size: 12px;">LOGO</div>
                             </div>
-                            <div class="col-10">
-                                <h2 class="mb-0" style="font-family: 'Microsoft JhengHei', sans-serif; font-size: 24px;">
+                            <div class="title-container">
+                                <h2 class="company-title">
                                     亦思科技(股)公司　報價單
                                 </h2>
                             </div>
                         </div>
 
                         <!-- 客戶資訊 -->
-                        <div class="row mb-4" style="font-size: 14px;">
-                            <div class="col-3"><strong>公司名稱：</strong></div>
-                            <div class="col-3">@Model.CompanyName</div>
-                            <div class="col-3"><strong>報價單號：</strong></div>
-                            <div class="col-3">@Model.QuotationNumber</div>
-                        </div>
-                        <div class="row mb-2" style="font-size: 14px;">
-                            <div class="col-3"><strong>聯絡人：</strong></div>
-                            <div class="col-3">@Model.ContactPerson</div>
-                            <div class="col-3"><strong>報價日期：</strong></div>
-                            <div class="col-3">@Model.QuotationDate.ToString("yyyy/MM/dd")</div>
-                        </div>
-                        <div class="row mb-4" style="font-size: 14px;">
-                            <div class="col-3"><strong>電話：</strong></div>
-                            <div class="col-3">@Model.Phone</div>
-                            <div class="col-3"><strong>專案名稱：</strong></div>
-                            <div class="col-3">@Model.ProjectName</div>
+                        <div class="info-section">
+                            <div class="info-row">
+                                <div class="info-label">公司名稱：</div>
+                                <div class="info-value">@Model.CompanyName</div>
+                                <div class="info-label">報價單號：</div>
+                                <div class="info-value">@Model.QuotationNumber</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">聯絡人：</div>
+                                <div class="info-value">@Model.ContactPerson</div>
+                                <div class="info-label">報價日期：</div>
+                                <div class="info-value">@Model.QuotationDate.ToString("yyyy/MM/dd")</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">電話：</div>
+                                <div class="info-value">@Model.Phone</div>
+                                <div class="info-label">專案名稱：</div>
+                                <div class="info-value">@Model.ProjectName</div>
+                            </div>
                         </div>
 
                         <!-- 品項表格 -->
-                        <div class="table-responsive mb-4">
-                            <table class="table table-bordered" style="font-size: 12px;">
-                                <thead class="table-light">
-                                    <tr style="background-color: #f8f9fa;">
-                                        <th class="text-center" width="8%">項次</th>
-                                        <th class="text-center" width="25%">品名規格</th>
-                                        <th class="text-center" width="10%">單位</th>
-                                        <th class="text-center" width="15%">單價</th>
-                                        <th class="text-center" width="10%">數量</th>
-                                        <th class="text-center" width="15%">小計</th>
-                                        <th class="text-center" width="17%">備註</th>
+                        <div class="table-section">
+                            <table class="items-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-item-no">項次</th>
+                                        <th class="col-item-name">品名規格</th>
+                                        <th class="col-unit">單位</th>
+                                        <th class="col-price">單價</th>
+                                        <th class="col-quantity">數量</th>
+                                        <th class="col-subtotal">小計</th>
+                                        <th class="col-notes">備註</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -92,18 +91,19 @@
                                     {
                                         <tr>
                                             <td class="text-center">@(i + 1)</td>
-                                            <td>@Model.Items[i].ItemName</td>
+                                            <td class="text-left">@Model.Items[i].ItemName</td>
                                             <td class="text-center">@Model.Items[i].Unit</td>
-                                            <td class="text-end">@Model.Items[i].UnitPrice.ToString("N0")</td>
-                                            <td class="text-center">@Model.Items[i].Quantity</td>
-                                            <td class="text-end">@Model.Items[i].Subtotal.ToString("N0")</td>
-                                            <td>@Model.Items[i].ItemNotes</td>
+                                            <td class="text-right">@Model.Items[i].UnitPrice.ToString("N0")</td>
+                                            <td class="text-right">@Model.Items[i].Quantity</td>
+                                            <td class="text-right">@Model.Items[i].Subtotal.ToString("N0")</td>
+                                            <td class="text-left">@Model.Items[i].ItemNotes</td>
                                         </tr>
                                     }
-                                    <tr style="background-color: #f8f9fa;">
-                                        <td colspan="5" class="text-center"><strong>合計</strong></td>
-                                        <td class="text-end"><strong>@Model.TotalAmount.ToString("N0") (未稅)</strong></td>
-                                        <td></td>
+                                    <!-- 合計行 -->
+                                    <tr class="total-row">
+                                        <td colspan="5" class="text-right"><strong>合計</strong></td>
+                                        <td class="text-right"><strong>@Model.TotalAmount.ToString("N0")</strong></td>
+                                        <td class="text-left">(未稅)</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -112,26 +112,32 @@
                         <!-- 備註 -->
                         @if (!string.IsNullOrEmpty(Model.Notes))
                         {
-                            <div class="mb-4" style="font-size: 12px;">
-                                <strong>備註：</strong><br />
-                                @foreach (var line in Model.Notes.Split('\n'))
-                                {
-                                    if (!string.IsNullOrWhiteSpace(line))
-                                    {
-                                        <div style="margin-left: 20px; margin-bottom: 2px;">@line.Trim()</div>
-                                    }
-                                }
+                            <div class="notes-section">
+                                <div class="notes-container">
+                                    <div class="notes-label">備註：</div>
+                                    <div class="notes-content">
+                                        @foreach (var line in Model.Notes.Split('\n'))
+                                        {
+                                            if (!string.IsNullOrWhiteSpace(line))
+                                            {
+                                                <div class="notes-line">@line.Trim()</div>
+                                            }
+                                        }
+                                    </div>
+                                </div>
                             </div>
                         }
 
                         <!-- 簽名區域 -->
-                        <div class="row mt-5" style="font-size: 12px;">
-                            <div class="col-6">
-                                <div style="border-bottom: 1px solid #333; width: 200px; height: 40px; margin-bottom: 5px;"></div>
-                                <strong>客戶確認：</strong>
-                            </div>
-                            <div class="col-6 text-end">
-                                <strong>業務負責：(@Model.SalesPhone)　Mail：@Model.SalesEmail</strong>
+                        <div class="footer-section">
+                            <div class="signature-container">
+                                <div class="customer-signature">
+                                    <div class="signature-label">客戶確認：</div>
+                                    <div class="signature-line"></div>
+                                </div>
+                                <div class="sales-info">
+                                    業務負責：@Model.SalesManager (@Model.SalesPhone)　Mail：@Model.SalesEmail
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -142,28 +148,177 @@
 </div>
 
 <style>
+    /* 基本樣式 */
     .pdf-preview {
         font-family: 'Microsoft JhengHei', 'SimSun', serif;
         color: #000;
         line-height: 1.4;
+        background: white;
+        border: 1px solid #ddd;
+        padding: 30px;
     }
 
-        .pdf-preview table {
-            border: 1px solid #000 !important;
-        }
+    /* A4橫向模擬 */
+    .landscape-a4 {
+        width: 100%;
+        max-width: 1050px; /* A4橫向寬度模擬 */
+        margin: 0 auto;
+        min-height: 744px; /* A4橫向高度模擬 */
+    }
 
-        .pdf-preview th,
-        .pdf-preview td {
-            border: 1px solid #000 !important;
-            padding: 8px;
-            vertical-align: middle;
-        }
+    /* 標題區域 */
+    .header-section {
+        display: flex;
+        align-items: flex-end;
+        margin-bottom: 20px;
+    }
 
-        .pdf-preview th {
-            background-color: #f0f0f0 !important;
-            font-weight: bold;
-        }
+    .logo-container {
+        width: 35%;
+        text-align: right;
+        padding-right: 20px;
+    }
 
+    .title-container {
+        width: 65%;
+    }
+
+    .company-title {
+        font-size: 19px;
+        font-weight: bold;
+        margin: 0;
+        text-align: left;
+    }
+
+    /* 客戶資訊區域 */
+    .info-section {
+        margin-bottom: 20px;
+    }
+
+    .info-row {
+        display: flex;
+        margin-bottom: 2px;
+        font-size: 12px;
+    }
+
+    .info-label {
+        width: 10%;
+        font-weight: bold;
+    }
+
+    .info-value {
+        width: 40%;
+        padding-left: 5px;
+    }
+
+    /* 品項表格 */
+    .table-section {
+        margin-bottom: 20px;
+    }
+
+    .items-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .items-table th,
+    .items-table td {
+        border: 1px solid #000;
+        padding: 3px;
+        vertical-align: middle;
+    }
+
+    .items-table th {
+        background-color: #d3d3d3; /* 淺灰色背景 */
+        font-weight: bold;
+        text-align: center;
+    }
+
+    /* 欄位寬度 - 按照PDF比例 */
+    .col-item-no { width: 5%; }
+    .col-item-name { width: 23%; }
+    .col-unit { width: 5%; }
+    .col-price { width: 10%; }
+    .col-quantity { width: 7%; }
+    .col-subtotal { width: 10%; }
+    .col-notes { width: 40%; }
+
+    /* 文字對齊 */
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+
+    /* 合計行 */
+    .total-row {
+        background-color: #f8f9fa;
+    }
+
+    /* 備註區域 */
+    .notes-section {
+        margin-bottom: 5px;
+    }
+
+    .notes-container {
+        display: flex;
+        font-size: 12px;
+    }
+
+    .notes-label {
+        width: 10%;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .notes-content {
+        width: 90%;
+    }
+
+    .notes-line {
+        margin: 0;
+        padding: 0;
+        line-height: 1.0;
+    }
+
+    /* 簽名區域 */
+    .footer-section {
+        margin-top: 30px;
+    }
+
+    .signature-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 12px;
+    }
+
+    .customer-signature {
+        width: 50%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .signature-line {
+        width: 300px;
+        height: 20px;
+        border-bottom: 1px solid #000;
+        margin-bottom: 5px;
+        align-self: flex-start;
+    }
+
+    .signature-label {
+        font-weight: bold;
+        align-self: flex-start;
+    }
+
+    .sales-info {
+        width: 50%;
+        text-align: right;
+        font-weight: bold;
+        align-self: flex-start;
+    }
+
+    /* 列印樣式 */
     @@media print {
         .card-header,
         .btn {
@@ -187,6 +342,7 @@
             margin: 0;
             max-width: none;
         }
+
     }
 </style>
 
